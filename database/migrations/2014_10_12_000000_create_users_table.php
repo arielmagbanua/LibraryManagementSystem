@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->text('address');
             $table->string('email')->unique();
             $table->date('birth_date');
-            $table->smallInteger('account_type')->unsigned()->default(2); //2 is member
+            $table->smallInteger('account_type')->unsigned()->default(2); //2 is member and 1 is admin
             $table->string('password', 60);
             $table->rememberToken();
             $table->timestamps();
