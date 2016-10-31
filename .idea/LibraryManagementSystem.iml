@@ -69,6 +69,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="bootstrap-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="jQuery-2.0.0" level="application" />
+    <orderEntry type="library" name="jquery-DefinitelyTyped" level="application" />
     <orderEntry type="module-library">
       <library name="PHP">
         <CLASSES>
@@ -205,8 +208,5 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="bootstrap-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="jQuery-2.0.0" level="application" />
-    <orderEntry type="library" name="jquery-DefinitelyTyped" level="application" />
   </component>
 </module>
