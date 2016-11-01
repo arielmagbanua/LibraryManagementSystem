@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return view('master');
 });
+
+/**
+ * authentication routes
+ */
+Route::controllers([
+    'auth' => 'AuthenticationController',
+    'password' => 'Auth\PasswordController',
+]);

@@ -34,7 +34,24 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next)
     {
         if ($this->auth->check()) {
-            return redirect('/');
+
+            //get the authenticated user's account type
+            $userAccountType = $request->user()->account_type;
+
+            switch($userAccountType)
+            {
+                case 1:
+                    return redirect('admin');
+                    break;
+
+                case 2:
+                    return redirect('member');
+                    break;
+
+                default:
+                    return response('Unauthorized.', 401);
+            }
+
         }
 
         return $next($request);
