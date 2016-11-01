@@ -38,7 +38,7 @@ $factory->define(App\Book::class, function (Faker\Generator $faker) {
         'title' => $faker->realText($faker->numberBetween(50,100)),
         'author_id' => $faker->randomElement($authorIDs),
         'isbn' => $faker->isbn13,
-        'quantities' => $faker->biasedNumberBetween(0,20),
+        'quantity' => $faker->biasedNumberBetween(0,20),
         'overdue_fine' => $faker->randomFloat(null,1.0,50.0),
         'shelf_location' => $faker->randomLetter.'-'.$faker->biasedNumberBetween(0,20)
     ];
