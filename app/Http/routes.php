@@ -23,6 +23,8 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
 {
     Route::get('/','AdminController@index');
     Route::get('/reports','AdminController@index');
+    Route::get('/books','AdminController@books');
+    Route::get('/members','AdminController@members');
 });
 
 Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()

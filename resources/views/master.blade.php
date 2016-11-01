@@ -30,15 +30,15 @@
             <ul id="nav-mobile" class="right hide-on-med-and-down">
 
                 @if(auth()->check() && auth()->user()->account_type == 1)
-                    <li><a href="{{ url('admin/reports') }}">Reports</a></li>
-                    <li><a href="{{ url('admin/books') }}">Books</a></li>
-                    <li><a href="{{ url('admin/members') }}">Members</a></li>
+                    <li class="@yield('admin-reports-class')"><a href="{{ url('admin/reports') }}">Reports</a></li>
+                    <li class="@yield('admin-books-class')"><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li class="@yield('admin-members-class')"><a href="{{ url('admin/members') }}">Members</a></li>
                 @endif
 
                 @if(auth()->check() && auth()->user()->account_type == 2)
-                    <li><a href="{{ url('member/home') }}">Home</a></li>
-                    <li><a href="{{ url('admin/books') }}">Books</a></li>
-                    <li><a href="{{ url('admin/borrowed') }}">Borrowed Books</a></li>
+                    <li class="@yield('member-home-class')"><a href="{{ url('member/home') }}">Home</a></li>
+                    <li class="@yield('member-books-class')"><a href="{{ url('member/books') }}">Books</a></li>
+                    <li class="@yield('member-borrowed-class')"><a href="{{ url('member/borrowed') }}">Borrowed Books</a></li>
                 @endif
 
                 <!-- Dropdown Trigger -->
@@ -48,15 +48,15 @@
             <ul class="side-nav" id="mobile-menu">
 
                 @if(auth()->check() && auth()->user()->account_type == 1)
-                    <li><a href="{{ url('admin/reports') }}">Reports</a></li>
-                    <li><a href="{{ url('admin/books') }}">Books</a></li>
-                    <li><a href="{{ url('admin/members') }}">Members</a></li>
+                    <li class="@yield('admin-reports-class')"><a href="{{ url('admin/reports') }}">Reports</a></li>
+                    <li class="@yield('admin-books-class')"><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li class="@yield('admin-members-class')"><a href="{{ url('admin/members') }}">Members</a></li>
                 @endif
 
                 @if(auth()->check() && auth()->user()->account_type == 2)
-                    <li><a href="{{ url('member/home') }}">Home</a></li>
-                    <li><a href="{{ url('admin/books') }}">Books</a></li>
-                    <li><a href="{{ url('admin/borrowed') }}">Borrowed Books</a></li>
+                    <li class="@yield('member-home-class')"><a href="{{ url('member/home') }}">Home</a></li>
+                    <li class="@yield('member-books-class')"><a href="{{ url('member/books') }}">Books</a></li>
+                    <li class="@yield('member-borrowed-class')"><a href="{{ url('member/borrowed') }}">Borrowed Books</a></li>
                 @endif
 
                 <li><a href="#">About</a></li>
@@ -65,7 +65,7 @@
         </div>
     </nav>
 
-    <div id="content">
+    <div id="container">
         @yield('main-content')
     </div>
 
