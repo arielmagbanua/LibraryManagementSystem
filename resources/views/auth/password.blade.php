@@ -58,7 +58,7 @@
                     </div>
                 @endif
 
-                <form role="form" method="POST" action="{{ url('/password/email') }}">
+                <form autocomplete="off" role="form" method="POST" action="{{ url('/password/email') }}">
                     <div class="card-content white-text">
                         <span class="card-title">Reset Password</span>
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

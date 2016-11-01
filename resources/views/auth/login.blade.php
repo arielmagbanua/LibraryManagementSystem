@@ -34,6 +34,7 @@
         .input-field .prefix.active {
             color: #ffffff;
         }
+
     </style>
 @endsection
 
@@ -55,22 +56,20 @@
                     </div>
                 @endif
 
-                <form role="form" method="POST" action="{{ url('/auth/login') }}">
+                <form autocomplete="off" role="form" method="POST" action="{{ url('/auth/login') }}">
                     <div class="card-content white-text">
                         <span class="card-title">The Library Login</span>
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="email" type="email" class="validate" name="email" value="{{ old('email') }}">
-                                    <label for="email">Email</label>
-                                </div>
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="email" type="email" class="validate" name="email" value="{{ old('email') }}">
+                                <label for="email">Email</label>
                             </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="password" type="password" class="validate" name="password">
-                                    <label for="password">Password</label>
-                                </div>
+                            <div class="input-field col s12">
+                                <input id="password" type="password" class="validate" name="password">
+                                <label for="password">Password</label>
                             </div>
+                        </div>
                     </div>
 
                     <div class="card-action">

@@ -50,7 +50,7 @@
                     </div>
                 @endif
 
-                <form role="form" method="POST" action="{{ url('/auth/login') }}">
+                <form autocomplete="off" role="form" method="POST" action="{{ url('/auth/login') }}">
                     <div class="card-content white-text">
                         <span class="card-title">The Library Login</span>
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -59,14 +59,10 @@
                                 <input id="email" type="email" class="validate" name="email" value="{{ url('/password/reset') }}">
                                 <label for="email">Email</label>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="input-field col s12">
                                 <input id="password" type="password" class="validate" name="password">
                                 <label for="password">Password</label>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="input-field col s12">
                                 <input id="password_confirmation" type="password" class="validate" name="password_confirmation">
                                 <label for="password_confirmation">Confirm Password</label>
