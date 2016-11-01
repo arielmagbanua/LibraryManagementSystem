@@ -18,7 +18,7 @@ class UserTableSeeder extends Seeder
 
         $member->first_name = 'Ariel';
         $member->middle_name = 'Cacanog';
-        $member->first_name = 'Magbanua';
+        $member->last_name = 'Magbanua';
         $member->address = '8th Avenue, Bangoy Street, Brgy. Tomas Monteverde, Agdao, Davao City';
         $member->birth_date = '1988-04-23';
         $member->account_type = 2;
@@ -31,7 +31,7 @@ class UserTableSeeder extends Seeder
 
         $admin->first_name = 'John';
         $admin->middle_name = 'Amazing';
-        $admin->first_name = 'Doe';
+        $admin->last_name = 'Doe';
         $admin->address = '8th Avenue, Bangoy Street, Brgy. Tomas Monteverde, Agdao, Davao City';
         $admin->birth_date = '1988-04-23';
         $admin->account_type = 1;
