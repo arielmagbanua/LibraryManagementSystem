@@ -16,9 +16,24 @@ Route::get('/', function () {
 });
 
 /**
+ * Author resource controller
+ */
+Route::resource('author', 'AuthorController');
+
+/**
+ * Book resource controller
+ */
+Route::resource('book', 'BookController');
+
+/**
+ * User resource controller
+ */
+Route::resource('user', 'UserController');
+
+/**
  * authentication routes
  */
 Route::controllers([
-    'auth' => 'AuthenticationController',
+    'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
