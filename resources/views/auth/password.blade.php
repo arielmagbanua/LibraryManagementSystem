@@ -29,6 +29,14 @@
         .input-field .prefix.active {
             color: #ffffff;
         }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-transition: "color 9999s ease-out, background-color 9999s ease-out";
+            -webkit-transition-delay: 9999s;
+        }
     </style>
 @endsection
 
@@ -58,7 +66,7 @@
                     </div>
                 @endif
 
-                <form autocomplete="off" role="form" method="POST" action="{{ url('/password/email') }}">
+                <form role="form" method="POST" action="{{ url('/password/email') }}">
                     <div class="card-content white-text">
                         <span class="card-title">Reset Password</span>
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -69,7 +77,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="card-action">
                         <button type="submit" class="waves-effect waves-light btn red lighten-2">Send Password Reset Link</button>
                     </div>

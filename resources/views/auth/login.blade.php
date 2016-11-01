@@ -35,6 +35,14 @@
             color: #ffffff;
         }
 
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-transition: "color 9999s ease-out, background-color 9999s ease-out";
+            -webkit-transition-delay: 9999s;
+        }
+
     </style>
 @endsection
 
@@ -56,7 +64,7 @@
                     </div>
                 @endif
 
-                <form autocomplete="off" role="form" method="POST" action="{{ url('/auth/login') }}">
+                <form role="form" method="POST" action="{{ url('/auth/login') }}">
                     <div class="card-content white-text">
                         <span class="card-title">The Library Login</span>
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -71,7 +79,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="card-action">
                         <button type="submit" class="waves-effect waves-light btn red lighten-2">Login</button>
                         <a id="forgot_password" href="{{ url('/password/email') }}">Forgot Your Password?</a>

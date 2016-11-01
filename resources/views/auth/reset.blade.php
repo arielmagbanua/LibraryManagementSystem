@@ -29,6 +29,14 @@
         .input-field .prefix.active {
             color: #ffffff;
         }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-transition: "color 9999s ease-out, background-color 9999s ease-out";
+            -webkit-transition-delay: 9999s;
+        }
     </style>
 @endsection
 
@@ -50,13 +58,13 @@
                     </div>
                 @endif
 
-                <form autocomplete="off" role="form" method="POST" action="{{ url('/auth/login') }}">
+                <form role="form" method="POST" action="{{ url('/password/reset') }}">
                     <div class="card-content white-text">
                         <span class="card-title">The Library Login</span>
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input id="email" type="email" class="validate" name="email" value="{{ url('/password/reset') }}">
+                                <input id="email" type="email" class="validate" name="email" value="{{ old('email') }}">
                                 <label for="email">Email</label>
                             </div>
                             <div class="input-field col s12">

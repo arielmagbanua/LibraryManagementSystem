@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/home', ['middleware' => ['auth', 'guest'], function () {
+Route::get('/home', ['middleware' => 'guest', function () {
     //
 }]);
 
@@ -19,14 +19,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['prefix' => 'admin',  'middleware' => 'admin'], function()
+Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function()
 {
     Route::get('/','AdminController@index');
+    Route::get('/reports','AdminController@index');
 });
 
-Route::group(['prefix' => 'member',  'middleware' => 'member'], function()
+Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()
 {
     Route::get('/','MemberController@index');
+    Route::get('/home','MemberController@index');
 });
 
 /**

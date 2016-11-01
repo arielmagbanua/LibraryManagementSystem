@@ -28,16 +28,37 @@
             <a href="{{url()}}" class="brand-logo">The Library</a>
             <a href="#" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="#">Members</a></li>
-                <li><a href="#">Books</a></li>
-                <li><a href="#">Reports and Statistics</a></li>
+
+                @if(auth()->check() && auth()->user()->account_type == 1)
+                    <li><a href="{{ url('admin/reports') }}">Reports</a></li>
+                    <li><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li><a href="{{ url('admin/members') }}">Members</a></li>
+                @endif
+
+                @if(auth()->check() && auth()->user()->account_type == 2)
+                    <li><a href="{{ url('member/home') }}">Home</a></li>
+                    <li><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li><a href="{{ url('admin/borrowed') }}">Borrowed Books</a></li>
+                @endif
+
                 <!-- Dropdown Trigger -->
                 <li><a class="dropdown-button" href="#!" data-activates="nav_three_dot_menu"><i class="material-icons right">more_vert</i></a></li>
+
             </ul>
             <ul class="side-nav" id="mobile-menu">
-                <li><a href="#">Members</a></li>
-                <li><a href="#">Books</a></li>
-                <li><a href="#">Reports and Statistics</a></li>
+
+                @if(auth()->check() && auth()->user()->account_type == 1)
+                    <li><a href="{{ url('admin/reports') }}">Reports</a></li>
+                    <li><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li><a href="{{ url('admin/members') }}">Members</a></li>
+                @endif
+
+                @if(auth()->check() && auth()->user()->account_type == 2)
+                    <li><a href="{{ url('member/home') }}">Home</a></li>
+                    <li><a href="{{ url('admin/books') }}">Books</a></li>
+                    <li><a href="{{ url('admin/borrowed') }}">Borrowed Books</a></li>
+                @endif
+
                 <li><a href="#">About</a></li>
                 <li><a href="{{ url('auth/logout') }}">Logout</a></li>
             </ul>
