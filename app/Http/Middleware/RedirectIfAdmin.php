@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class RedirectIfAuthenticated
+class RedirectIfAdmin
 {
     /**
      * The Guard implementation.
@@ -17,7 +17,7 @@ class RedirectIfAuthenticated
     /**
      * Create a new filter instance.
      *
-     * @param  Guard  $auth
+     * @param Guard $auth
      */
     public function __construct(Guard $auth)
     {
@@ -33,25 +33,19 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next)
     {
-        if ($this->auth->check()) {
-
+        if($this->auth->check())
+        {
             //get the authenticated user's account type
-            $userAccountType = $this->auth->user()->account_type;;
+            $userAccountType = $request->user()->account_type;
 
-            switch($userAccountType)
+            if($userAccountType==1)
             {
-                case 1:
-                    return redirect('admin');
-                    break;
-
-                case 2:
-                    return redirect('member');
-                    break;
-
-                default:
-                    return response('Unauthorized.', 401);
+                return $next($request);
             }
-
+            else
+            {
+                return response('Unauthorized.', 401);
+            }
         }
 
         return $next($request);

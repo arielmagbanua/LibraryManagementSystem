@@ -11,22 +11,22 @@
 |
 */
 
+Route::get('/home', ['middleware' => ['auth', 'guest'], function () {
+    //
+}]);
+
 Route::get('/', function () {
-    return view('master');
+    return view('welcome');
 });
 
-Route::group(['middleware' => 'auth'], function () {
-    Route::group(['middleware' => 'guest'], function () {
+Route::group(['prefix' => 'admin',  'middleware' => 'admin'], function()
+{
+    Route::get('/','AdminController@index');
+});
 
-        Route::group(['prefix' => 'admin'], function () {
-            Route::get('/','AdminController@index');
-        });
-
-        Route::group(['prefix' => 'member'], function () {
-            Route::get('/','MemberController@index');
-        });
-
-    });
+Route::group(['prefix' => 'member',  'middleware' => 'member'], function()
+{
+    Route::get('/','MemberController@index');
 });
 
 /**
