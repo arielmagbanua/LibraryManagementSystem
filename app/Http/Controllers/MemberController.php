@@ -16,7 +16,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+        return view('member.index');
     }
 
     /**
@@ -37,7 +37,7 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**

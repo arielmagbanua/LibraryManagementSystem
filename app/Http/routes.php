@@ -15,6 +15,20 @@ Route::get('/', function () {
     return view('master');
 });
 
+Route::group(['middleware' => 'auth'], function () {
+    Route::group(['middleware' => 'guest'], function () {
+
+        Route::group(['prefix' => 'admin'], function () {
+            Route::get('/','AdminController@index');
+        });
+
+        Route::group(['prefix' => 'member'], function () {
+            Route::get('/','MemberController@index');
+        });
+
+    });
+});
+
 /**
  * Author resource controller
  */

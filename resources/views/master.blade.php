@@ -19,12 +19,12 @@
 
 <!-- Dropdown Structure -->
     <ul id="nav_three_dot_menu" class="dropdown-content">
-        <li><a href="#!">About</a></li>
-        <li><a href="#!">Logout</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="{{ url('auth/logout') }}">Logout</a></li>
     </ul>
 
     <nav>
-        <div class="nav-wrapper">
+        <div class="nav-wrapper red darken-1">
             <a href="{{url()}}" class="brand-logo">The Library</a>
             <a href="#" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -39,7 +39,7 @@
                 <li><a href="#">Books</a></li>
                 <li><a href="#">Reports and Statistics</a></li>
                 <li><a href="#">About</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="{{ url('auth/logout') }}">Logout</a></li>
             </ul>
         </div>
     </nav>

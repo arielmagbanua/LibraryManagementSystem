@@ -7,5 +7,5 @@
     Admin
 @endsection
 
-@yield('footer-links')
+@section('footer-links')
 @endsection

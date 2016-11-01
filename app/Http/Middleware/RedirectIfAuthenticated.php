@@ -45,7 +45,8 @@ class RedirectIfAuthenticated
                     break;
 
                 case 2:
-                    return redirect('member');
+                    //commented since it after authentication system will redirect to the member index
+                    //return redirect('member');
                     break;
 
                 default:

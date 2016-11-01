@@ -1,7 +1,5 @@
 @extends('master')
 
-@extends('master')
-
 @section('header-links')
 @endsection
 
@@ -9,5 +7,5 @@
     Member
 @endsection
 
-@yield('footer-links')
+@section('footer-links')
 @endsection
