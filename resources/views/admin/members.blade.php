@@ -14,7 +14,7 @@
         <div class="col s12"><h4>Members</h4></div>
 
         <div class="col s12">
-            <table>
+            <table id="members_datatable">
                 <thead>
                 <tr>
                     <th data-field="id">ID</th>
@@ -35,4 +35,11 @@
 @endsection
 
 @section('footer-links')
+    <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script>
+        $(document).ready(function()
+        {
+            $('#members_datatable').DataTable();
+        });
+    </script>
 @endsection
