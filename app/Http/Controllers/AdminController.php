@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\User;
 
 class AdminController extends Controller
 {
@@ -35,6 +36,8 @@ class AdminController extends Controller
      */
     public function members()
     {
-        return view('admin.members');
+        $members = User::allMembers()->get();
+
+        return view('admin.members',compact('members'));
     }
 }

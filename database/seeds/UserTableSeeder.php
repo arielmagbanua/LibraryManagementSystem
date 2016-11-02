@@ -38,5 +38,7 @@ class UserTableSeeder extends Seeder
         $admin->password = bcrypt('password');
         $admin->save();
 
+        //seeder for random members
+        factory(User::class, 100)->create();
     }
 }

@@ -1,10 +1,14 @@
-@extends('master')
+@extends('app')
 
 @section('header-links')
 @endsection
 
 @section('admin-books-class')
     active
+@endsection
+
+@section('admin-books-current')
+    <span class="sr-only">(current)</span>
 @endsection
 
 @section('main-content')

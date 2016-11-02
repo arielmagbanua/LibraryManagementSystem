@@ -8,8 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Login">
 
-    <!-- Materialize CSS -->
-    <link rel="stylesheet" href="{{ asset('bower_components/materialize/dist/css/materialize.min.css') }}">
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap-theme.min.css') }}">
 
     @yield('header-links')
 </head>
@@ -21,7 +22,7 @@
     </div>
 
     <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('bower_components/materialize/dist/js/materialize.min.js') }}"></script>
+    <script src="{{ asset('bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 
     @yield('footer-links')
 </body>

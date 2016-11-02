@@ -147,7 +147,7 @@ return [
 
         //additional providers
         Collective\Html\HtmlServiceProvider::class,
-
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
     ],
 
     /*
