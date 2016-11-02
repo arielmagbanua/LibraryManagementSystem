@@ -53,7 +53,22 @@
     <script>
         $(document).ready(function()
         {
-            $('#members_datatable').DataTable();
+            var baseURL = $('#baseURL').html();
+            var membersListURL = baseURL+'/serverSide/membersList';
+
+            $('#members_datatable').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'order': [[ 0, "desc" ]],
+                'ajax': {
+                    url: membersListURL,
+                    type: 'get',
+                    error: function()
+                    {
+
+                    }
+                }
+            });
         });
     </script>
 @endsection

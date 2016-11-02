@@ -50,4 +50,11 @@ class User extends Model implements AuthenticatableContract,
     {
         return $query->where('account_type','=',2);
     }
+
+    public function scopeSearchMembers($query, $inputs)
+    {
+        $query->where('account_type','=',2);
+
+
+    }
 }

@@ -84,4 +84,16 @@ class UserController extends Controller
     {
         //
     }
+
+    /**
+     * Server side processing url for members list datatable.
+     *
+     * @param Request $request
+     */
+    public function membersList(Request $request)
+    {
+        $inputs = $request->all();
+
+
+    }
 }
