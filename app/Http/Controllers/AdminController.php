@@ -30,6 +30,16 @@ class AdminController extends Controller
     }
 
     /**
+     * Display authors page
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function authors()
+    {
+        return view('admin.authors');
+    }
+
+    /**
      * Display books page
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View

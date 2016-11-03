@@ -90,16 +90,16 @@ class UserController extends Controller
      * https://datatables.net/examples/ajax/objects.html
      * https://datatables.net/reference/api/row().data()
      *
-     *
      * @param Request $request
+     * @return array
      */
     public function membersList(Request $request)
     {
         $inputs = $request->all();
         $param = $inputs['search']['value'];
 
-        $allMembers = User::allMembers();
-        $totalFiltered = $allMembers->count();
+        $allMembersCount = User::allMembers()->count();
+        $totalFiltered = $allMembersCount;
 
         $membersData = [];
 
@@ -107,9 +107,36 @@ class UserController extends Controller
 
         foreach($membersWithLimit as $member)
         {
-            $data = [];
 
-            
+            $editButton = '<button class="edit-member btn-actions btn btn-primary" title="Edit" data-id="'.$member->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $deleteButton = '<button class="delete-member btn-actions btn btn-danger" title="Delete" data-id="'.$member->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
+
+            $data = [
+                'id' => '<span id="member-'.$member->id.'-id">'.$member->id.'</span>',
+                'first_name' => '<span id="member-'.$member->id.'-first_name">'.$member->first_name.'</span>',
+                'middle_name' => '<span id="member-'.$member->id.'-middle_name">'.$member->middle_name.'</span>',
+                'last_name' => '<span id="member-'.$member->id.'-last_name">'.$member->last_name.'</span>',
+                'address' => '<span id="member-'.$member->id.'-address">'.$member->address.'</span>',
+                'email' => '<span id="member-'.$member->id.'-email">'.$member->email.'</span>',
+                'birth_date' => '<span id="member-'.$member->id.'-birth_date">'.$member->birth_date.'</span>',
+                'actions' => $editButton.$deleteButton
+            ];
+
+            array_push($membersData,$data);
         }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = User::searchMembersWithoutLimit($inputs)->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allMembersCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $membersData   // total data array
+        );
+
+        return $responseData;
     }
 }

@@ -12,6 +12,38 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use DateTime;
 use DB;
 
+/**
+ * App\User
+ *
+ * @method static \Illuminate\Database\Query\Builder|\App\User allMembers()
+ * @method static \Illuminate\Database\Query\Builder|\App\User searchMembersWithLimit($inputs)
+ * @method static \Illuminate\Database\Query\Builder|\App\User searchMembersWithoutLimit($inputs)
+ * @mixin \Eloquent
+ * @property integer $id
+ * @property string $first_name
+ * @property string $middle_name
+ * @property string $last_name
+ * @property string $address
+ * @property string $email
+ * @property string $birth_date
+ * @property integer $account_type
+ * @property string $password
+ * @property string $remember_token
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereFirstName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereMiddleName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereLastName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereAddress($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereBirthDate($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereAccountType($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User wherePassword($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereUpdatedAt($value)
+ */
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
                                     CanResetPasswordContract
@@ -81,8 +113,13 @@ class User extends Model implements AuthenticatableContract,
 
         if(!empty($param) || $param!='')
         {
-            $query->where(function($query,$param)
+            $rawWhere = "(first_name LIKE '%$param%' OR middle_name LIKE '%$param%' OR last_name LIKE '%$param%' OR address LIKE '%$param%' OR email LIKE '%$param%' BIRTH_DATE_CRITERIA ID_CRITERIA)";
+
+            /*
+            $query->where(function($query,$inputs) use ($inputs)
             {
+                $param = $inputs['search']['value'];
+
                 $query->where('first_name','LIKE',"%$param%")
                       ->orWhere('middle_name','LIKE',"%$param%")
                       ->orWhere('last_name','LIKE',"%$param%")
@@ -101,6 +138,33 @@ class User extends Model implements AuthenticatableContract,
                     $query->orWhere('id','=',$paramInt);
                 }
             });
+            */
+
+            //for birth_date
+            if($this->validateDate($param))
+            {
+                //$query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
+                $criteria = " OR DATE(birth_date) = DATE('$param')";
+                $rawWhere = str_replace('BIRTH_DATE_CRITERIA',$criteria,$rawWhere);
+            }
+            else
+            {
+                $rawWhere = str_replace('BIRTH_DATE_CRITERIA','',$rawWhere);
+            }
+
+            if(is_numeric($param))
+            {
+                $paramInt = intval($param);
+                //$query->orWhere('id','=',$paramInt);
+                $criteria = " OR id = $paramInt";
+                $rawWhere = str_replace('ID_CRITERIA',$criteria,$rawWhere);
+            }
+            else
+            {
+                $rawWhere = str_replace('ID_CRITERIA','',$rawWhere);
+            }
+
+            $query->whereRaw(DB::raw($rawWhere));
         }
 
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
@@ -139,6 +203,9 @@ class User extends Model implements AuthenticatableContract,
 
         if(!empty($param) || $param!='')
         {
+            $rawWhere = "(first_name LIKE '%$param%' OR middle_name LIKE '%$param%' OR last_name LIKE '%$param%' OR address LIKE '%$param%' OR email LIKE '%$param%' BIRTH_DATE_CRITERIA ID_CRITERIA)";
+
+            /*
             $query->where(function($query,$param)
             {
                 $query->where('first_name','LIKE',"%$param%")
@@ -159,6 +226,33 @@ class User extends Model implements AuthenticatableContract,
                     $query->orWhere('id','=',$paramInt);
                 }
             });
+            */
+
+            //for birth_date
+            if($this->validateDate($param))
+            {
+                //$query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
+                $criteria = " OR DATE(birth_date) = DATE('$param')";
+                $rawWhere = str_replace('BIRTH_DATE_CRITERIA',$criteria,$rawWhere);
+            }
+            else
+            {
+                $rawWhere = str_replace('BIRTH_DATE_CRITERIA','',$rawWhere);
+            }
+
+            if(is_numeric($param))
+            {
+                $paramInt = intval($param);
+                //$query->orWhere('id','=',$paramInt);
+                $criteria = " OR id = $paramInt";
+                $rawWhere = str_replace('ID_CRITERIA',$criteria,$rawWhere);
+            }
+            else
+            {
+                $rawWhere = str_replace('ID_CRITERIA','',$rawWhere);
+            }
+
+            $query->whereRaw(DB::raw($rawWhere));
         }
 
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);

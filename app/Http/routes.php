@@ -23,6 +23,7 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
 {
     Route::get('/','AdminController@index');
     Route::get('/reports','AdminController@index');
+    Route::get('/authors','AdminController@authors');
     Route::get('/books','AdminController@books');
     Route::get('/members','AdminController@members');
 });
@@ -31,6 +32,16 @@ Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], functio
 {
     Route::get('/','MemberController@index');
     Route::get('/home','MemberController@index');
+});
+
+/**
+ * Server side routes
+ */
+Route::group(['prefix' => 'serverSide'], function()
+{
+    Route::get('membersList','UserController@membersList');
+    Route::get('booksList','BookController@booksList');
+    Route::get('authorsList','AuthorController@authorsList');
 });
 
 /**

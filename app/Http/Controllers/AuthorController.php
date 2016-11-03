@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Author;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -83,5 +84,56 @@ class AuthorController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Server side processing url for authors list datatable.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function authorsList(Request $request)
+    {
+        $inputs = $request->all();
+        $param = $inputs['search']['value'];
+
+        $allAuthorsCount = Author::all()->count();
+        $totalFiltered = $allAuthorsCount;
+
+        $authorsData = [];
+
+        $authorsWithLimit = Author::searchAuthorsWithLimit($inputs)->get();
+
+        foreach($authorsWithLimit as $author)
+        {
+            $editButton = '<button class="edit-author btn-actions btn btn-primary" title="Edit" data-id="'.$author->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $deleteButton = '<button class="delete-author btn-actions btn btn-danger" title="Delete" data-id="'.$author->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
+
+            $data = [
+                'id' => '<span id="author-'.$author->id.'-id">'.$author->id.'</span>',
+                'first_name' => '<span id="author-'.$author->id.'-first_name">'.$author->first_name.'</span>',
+                'middle_name' => '<span id="author-'.$author->id.'-middle_name">'.$author->middle_name.'</span>',
+                'last_name' => '<span id="author-'.$author->id.'-last_name">'.$author->last_name.'</span>',
+                'description' => '<span id="author-'.$author->id.'-description">'.$author->description.'</span>',
+                'birth_date' => '<span id="author-'.$author->id.'-birth_date">'.$author->birth_date.'</span>',
+                'actions' => $editButton.$deleteButton
+            ];
+
+            array_push($authorsData,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = Author::searchAuthorsWithoutLimit($inputs)->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allAuthorsCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $authorsData   // total data array
+        );
+
+        return $responseData;
     }
 }

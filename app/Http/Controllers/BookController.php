@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Book;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -83,5 +84,56 @@ class BookController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Server side processing url for books list datatable.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function booksList(Request $request)
+    {
+        $inputs = $request->all();
+        $param = $inputs['search']['value'];
+
+        $allBooksCount = Book::all()->count();
+        $totalFiltered = $allBooksCount;
+
+        $booksData = [];
+
+        $booksWithLimit = Book::searchBooksWithLimit($inputs)->get();
+
+        foreach($booksWithLimit as $book)
+        {
+            $editButton = '<button class="edit-book btn-actions btn btn-primary" title="Edit" data-id="'.$book->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $deleteButton = '<button class="delete-book btn-actions btn btn-danger" title="Delete" data-id="'.$book->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
+
+            $data = [
+                'title' => '<span id="book-'.$book->id.'-title">'.$book->title.'</span>',
+                'author' => '<span id="book-'.$book->id.'-author">'.$book->author_name.'</span>',
+                'isbn' => '<span id="book-'.$book->id.'-isbn">'.$book->isbn.'</span>',
+                'quantity' => '<span id="book-'.$book->id.'-quantity">'.$book->quantity.'</span>',
+                'overdue_fine' => '<span id="book-'.$book->id.'-overdue_fine">'.$book->overdue_fine.'</span>',
+                'shelf_location' => '<span id="book-'.$book->id.'-shelf_location">'.$book->shelf_location.'</span>',
+                'actions' => $editButton.$deleteButton
+            ];
+
+            array_push($booksData,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = Book::searchBooksWithoutLimit($inputs)->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allBooksCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $booksData   // total data array
+        );
+
+        return $responseData;
     }
 }

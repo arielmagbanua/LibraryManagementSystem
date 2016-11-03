@@ -41,8 +41,10 @@
                     -->
                     @if(auth()->check() && auth()->user()->account_type == 1)
                         <li class="@yield('admin-reports-class')"><a href="{{ url('admin/reports') }}">Reports @yield('admin-reports-current')</a></li>
+                        <li class="@yield('admin-authors-class')"><a href="{{ url('admin/authors') }}">Authors @yield('admin-authors-current')</a></li>
                         <li class="@yield('admin-books-class')"><a href="{{ url('admin/books') }}">Books @yield('admin-books-current')</a></li>
                         <li class="@yield('admin-members-class')"><a href="{{ url('admin/members') }}">Members @yield('admin-members-current')</a></li>
+                        <li class="@yield('admin-borrowRequests-class')"><a href="{{ url('admin/borrowRequests') }}">Members @yield('admin-borrowRequests-current')</a></li>
                     @endif
 
                     @if(auth()->check() && auth()->user()->account_type == 2)

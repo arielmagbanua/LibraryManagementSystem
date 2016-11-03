@@ -5,6 +5,31 @@ use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use DB;
 
+/**
+ * App\Book
+ *
+ * @method static \Illuminate\Database\Query\Builder|\App\Book searchBooksWithLimit($inputs)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book searchBooksWithoutLimit($inputs)
+ * @mixin \Eloquent
+ * @property integer $id
+ * @property string $title
+ * @property integer $author_id
+ * @property string $isbn
+ * @property integer $quantity
+ * @property float $overdue_fine
+ * @property string $shelf_location
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereAuthorId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereIsbn($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereQuantity($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereOverdueFine($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereShelfLocation($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereUpdatedAt($value)
+ */
 class Book extends Model
 {
     protected $table = 'books';
@@ -43,7 +68,7 @@ class Book extends Model
 
         $authorConcat = "authors.first_name,' ',authors.middle_name,' ',authors.last_name";
 
-        $query->select('books.*',"CONCAT($authorConcat) AS author_name");
+        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"));
         $query->join('authors', 'authors.id', '=', 'books.author_id');
 
         if(!empty($param) || $param!='')
@@ -109,7 +134,7 @@ class Book extends Model
 
         $authorConcat = "authors.first_name,' ',authors.middle_name,' ',authors.last_name";
 
-        $query->select('books.*',"CONCAT($authorConcat) AS author_name");
+        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"));
         $query->join('authors', 'authors.id', '=', 'books.author_id');
 
         if(!empty($param) || $param!='')

@@ -1,6 +1,7 @@
 @extends('app')
 
 @section('header-links')
+    <link rel="stylesheet" href="{{ asset('bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
 @endsection
 
 @section('admin-books-class')
@@ -13,29 +14,53 @@
 
 @section('main-content')
 
-    <div class="row">
+    <h2>Books</h2>
+    <hr>
 
-        <div class="col s12"><h4>Books</h4></div>
+    <table id="books_datatable" class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Quantity</th>
+                <th>Overdue Fine</th>
+                <th>Shelf Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-        <div class="col s12">
-            <table>
-                <thead>
-                    <tr>
-                        <th data-field="title">Title</th>
-                        <th data-field="author_id">Author</th>
-                        <th data-field="isbn">ISBN</th>
-                        <th data-field="quantity">Quantity</th>
-                        <th data-field="overdue_fine">Overdue Fine</th>
-                        <th data-field="shelf_location">Shelf Location</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-    </div>
 @endsection
 
 @section('footer-links')
+    <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            var baseURL = $('#baseURL').html();
+            var booksListURL = baseURL+'/serverSide/booksList';
+
+            $('#books_datatable').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'order': [[ 0, "desc" ]],
+                'ajax': {
+                    url: booksListURL,
+                    type: 'get',
+                    error: function() {}
+                },
+                'columns':[
+                    {'data':'title'},
+                    {'data':'author'},
+                    {'data':'isbn'},
+                    {'data':'quantity'},
+                    {'data':'overdue_fine'},
+                    {'data':'shelf_location'},
+                    {'data':'actions','orderable': false}
+                ]
+            });
+        });
+    </script>
 @endsection
