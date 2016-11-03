@@ -14,7 +14,7 @@
 
 @section('main-content')
 
-    <h2>Books</h2>
+    <h2>Authors</h2>
     <hr>
 
     <table id="authors_datatable" class="table">

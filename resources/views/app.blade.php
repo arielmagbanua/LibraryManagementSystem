@@ -28,7 +28,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url() }}">The Library</a>
+
+                @if(auth()->check() && auth()->user()->account_type == 1)
+                    <a class="navbar-brand" href="{{ url('admin/reports') }}">The Library</a>
+                @endif
+
+                @if(auth()->check() && auth()->user()->account_type == 2)
+                    <a class="navbar-brand" href="{{ url('member/home') }}">The Library</a>
+                @endif
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -44,7 +51,7 @@
                         <li class="@yield('admin-authors-class')"><a href="{{ url('admin/authors') }}">Authors @yield('admin-authors-current')</a></li>
                         <li class="@yield('admin-books-class')"><a href="{{ url('admin/books') }}">Books @yield('admin-books-current')</a></li>
                         <li class="@yield('admin-members-class')"><a href="{{ url('admin/members') }}">Members @yield('admin-members-current')</a></li>
-                        <li class="@yield('admin-borrowRequests-class')"><a href="{{ url('admin/borrowRequests') }}">Members @yield('admin-borrowRequests-current')</a></li>
+                        <li class="@yield('admin-borrowRequests-class')"><a href="{{ url('admin/borrowRequests') }}">Borrow Requests @yield('admin-borrowRequests-current')</a></li>
                     @endif
 
                     @if(auth()->check() && auth()->user()->account_type == 2)
