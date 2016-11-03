@@ -32,6 +32,7 @@ Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], functio
 {
     Route::get('/','MemberController@index');
     Route::get('/home','MemberController@index');
+    Route::get('/books','MemberController@books');
 });
 
 /**

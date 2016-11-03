@@ -21,6 +21,16 @@ class MemberController extends Controller
     }
 
     /**
+     * Display books page
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function books()
+    {
+        return view('member.books');
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
