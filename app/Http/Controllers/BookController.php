@@ -106,7 +106,7 @@ class BookController extends Controller
 
         foreach($booksWithLimit as $book)
         {
-            $editButton = '<button class="edit-book btn-actions btn btn-primary" title="Edit" data-id="'.$book->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $editButton = '<button class="edit-book btn-actions btn btn-primary" data-toggle="modal" data-target="#book_modal_form" title="Edit" data-id="'.$book->id.'" data-action="edit_book"><span class="glyphicon glyphicon-pencil"></span></button>';
             $deleteButton = '<button class="delete-book btn-actions btn btn-danger" title="Delete" data-id="'.$book->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
             $data = [
