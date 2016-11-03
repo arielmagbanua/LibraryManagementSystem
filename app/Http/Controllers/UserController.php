@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -87,13 +87,29 @@ class UserController extends Controller
 
     /**
      * Server side processing url for members list datatable.
+     * https://datatables.net/examples/ajax/objects.html
+     * https://datatables.net/reference/api/row().data()
+     *
      *
      * @param Request $request
      */
     public function membersList(Request $request)
     {
         $inputs = $request->all();
+        $param = $inputs['search']['value'];
 
+        $allMembers = User::allMembers();
+        $totalFiltered = $allMembers->count();
 
+        $membersData = [];
+
+        $membersWithLimit = User::searchMembersWithLimit($inputs)->get();
+
+        foreach($membersWithLimit as $member)
+        {
+            $data = [];
+
+            
+        }
     }
 }
