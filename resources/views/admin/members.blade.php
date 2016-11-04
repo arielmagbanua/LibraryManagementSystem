@@ -17,17 +17,30 @@
     <div class="modal fade" id="book_modal_form" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="book_modal_form_label">Modal title</h4>
-                </div>
-                <div class="modal-body">
-                    Book modal form
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+
+                {!! Form::open(['url' => url('book/create'), 'id' => 'book_form']) !!}
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="book_modal_form_label">Modal title</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            {{ Form::label('first_name', 'First Name') }}
+                            {{ Form::text('first_name', ['class' => 'form-control', 'placeholder' => 'First Name']) }}
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+
+                {!! Form::close() !!}
+
             </div>
         </div>
     </div>
