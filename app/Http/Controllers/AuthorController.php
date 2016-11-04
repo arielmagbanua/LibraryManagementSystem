@@ -106,7 +106,7 @@ class AuthorController extends Controller
 
         foreach($authorsWithLimit as $author)
         {
-            $editButton = '<button class="edit-author btn-actions btn btn-primary" title="Edit" data-id="'.$author->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $editButton = '<button class="edit-author btn-actions btn btn-primary" data-action="edit_author" data-toggle="modal" data-target="#author_modal_form" title="Edit" data-id="'.$author->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             $deleteButton = '<button class="delete-author btn-actions btn btn-danger" title="Delete" data-id="'.$author->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
             $data = [

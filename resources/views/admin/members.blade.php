@@ -100,6 +100,7 @@
         $(document).ready(function()
         {
             $('#birth_date').datepicker({
+                format: "yyyy-mm-dd",
                 clearBtn: true,
                 autoclose: true,
                 defaultViewDate: { year: 1998, month: 00, day: 01 }
