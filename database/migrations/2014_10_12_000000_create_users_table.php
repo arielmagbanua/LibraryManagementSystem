@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->smallInteger('account_type')->unsigned()->default(2); //2 is member and 1 is admin
             $table->string('password', 60);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -43,12 +44,15 @@ use DB;
  * @method static \Illuminate\Database\Query\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Query\Builder|\App\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\User whereUpdatedAt($value)
+ * @property \Carbon\Carbon $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Book[] $borrowedBooks
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereDeletedAt($value)
  */
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
                                     CanResetPasswordContract
 {
-    use Authenticatable, Authorizable, CanResetPassword;
+    use Authenticatable, Authorizable, CanResetPassword, SoftDeletes;
 
     /**
      * The database table used by the model.
@@ -73,6 +77,8 @@ class User extends Model implements AuthenticatableContract,
         'password'
     ];
 
+    protected $dates = ['deleted_at'];
+
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -80,6 +86,12 @@ class User extends Model implements AuthenticatableContract,
      */
     protected $hidden = ['password', 'remember_token'];
 
+    /**
+     * Query scope for all member type users.
+     *
+     * @param $query
+     * @return mixed
+     */
     public function scopeAllMembers($query)
     {
         return $query->where('account_type','=',2);
@@ -115,35 +127,9 @@ class User extends Model implements AuthenticatableContract,
         {
             $rawWhere = "(first_name LIKE '%$param%' OR middle_name LIKE '%$param%' OR last_name LIKE '%$param%' OR address LIKE '%$param%' OR email LIKE '%$param%' BIRTH_DATE_CRITERIA ID_CRITERIA)";
 
-            /*
-            $query->where(function($query,$inputs) use ($inputs)
-            {
-                $param = $inputs['search']['value'];
-
-                $query->where('first_name','LIKE',"%$param%")
-                      ->orWhere('middle_name','LIKE',"%$param%")
-                      ->orWhere('last_name','LIKE',"%$param%")
-                      ->orWhere('address','LIKE',"%$param%")
-                      ->orWhere('email','LIKE',"%$param%");
-
-                //for birth_date
-                if($this->validateDate($param))
-                {
-                    $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
-                }
-
-                if(is_numeric($param))
-                {
-                    $paramInt = intval($param);
-                    $query->orWhere('id','=',$paramInt);
-                }
-            });
-            */
-
             //for birth_date
             if($this->validateDate($param))
             {
-                //$query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
                 $criteria = " OR DATE(birth_date) = DATE('$param')";
                 $rawWhere = str_replace('BIRTH_DATE_CRITERIA',$criteria,$rawWhere);
             }
@@ -205,33 +191,9 @@ class User extends Model implements AuthenticatableContract,
         {
             $rawWhere = "(first_name LIKE '%$param%' OR middle_name LIKE '%$param%' OR last_name LIKE '%$param%' OR address LIKE '%$param%' OR email LIKE '%$param%' BIRTH_DATE_CRITERIA ID_CRITERIA)";
 
-            /*
-            $query->where(function($query,$param)
-            {
-                $query->where('first_name','LIKE',"%$param%")
-                    ->orWhere('middle_name','LIKE',"%$param%")
-                    ->orWhere('last_name','LIKE',"%$param%")
-                    ->orWhere('address','LIKE',"%$param%")
-                    ->orWhere('email','LIKE',"%$param%");
-
-                //for birth_date
-                if($this->validateDate($param))
-                {
-                    $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
-                }
-
-                if(is_numeric($param))
-                {
-                    $paramInt = intval($param);
-                    $query->orWhere('id','=',$paramInt);
-                }
-            });
-            */
-
             //for birth_date
             if($this->validateDate($param))
             {
-                //$query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
                 $criteria = " OR DATE(birth_date) = DATE('$param')";
                 $rawWhere = str_replace('BIRTH_DATE_CRITERIA',$criteria,$rawWhere);
             }
@@ -258,6 +220,16 @@ class User extends Model implements AuthenticatableContract,
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
 
         return $query;
+    }
+
+    /**
+     * All borrowed books by the member
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function borrowedBooks()
+    {
+        return $this->belongsToMany(Book::class,'borrowed_books','user_id','book_id');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Author
@@ -25,9 +26,14 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Author whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Author searchAuthorsWithLimit($inputs)
  * @method static \Illuminate\Database\Query\Builder|\App\Author searchAuthorsWithoutLimit($inputs)
+ * @property \Carbon\Carbon $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Book[] $books
+ * @method static \Illuminate\Database\Query\Builder|\App\Author whereDeletedAt($value)
  */
 class Author extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'authors';
 
     protected $fillable = [
@@ -37,6 +43,8 @@ class Author extends Model
         'description',
         'birth_date'
     ];
+
+    protected $dates = ['deleted_at'];
 
     /**
      * Scope query for the server side processing for authors datatable. This is with limit.
@@ -137,6 +145,16 @@ class Author extends Model
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
 
         return $query;
+    }
+
+    /**
+     * All books authored by this particular author.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function books()
+    {
+        return $this->hasMany(Book::class);
     }
 
     /**

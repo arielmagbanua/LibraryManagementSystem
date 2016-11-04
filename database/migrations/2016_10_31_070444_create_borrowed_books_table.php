@@ -18,6 +18,7 @@ class CreateBorrowedBooksTable extends Migration
             $table->integer('book_id')->unsigned()->index();
             $table->smallInteger('status')->unsigned()->default(1); //1 - borrowed, 0 - returned
             $table->decimal('fine', 5, 3)->default(0.0);
+            $table->dateTime('borrow_start_date');
             $table->dateTime('date_returned');
             $table->timestamps();
 

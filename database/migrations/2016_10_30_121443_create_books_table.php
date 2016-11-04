@@ -20,6 +20,7 @@ class CreateBooksTable extends Migration
             $table->integer('quantity')->unsigned()->default(0);
             $table->decimal('overdue_fine', 5, 3);
             $table->string('shelf_location',20);
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('author_id')->references('id')->on('authors')->onDelete('set null');

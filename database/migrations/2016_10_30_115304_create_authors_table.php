@@ -19,6 +19,7 @@ class CreateAuthorsTable extends Migration
             $table->string('last_name',50);
             $table->text('description');
             $table->date('birth_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

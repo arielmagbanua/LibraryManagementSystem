@@ -4,6 +4,7 @@ namespace App;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Book
@@ -29,9 +30,15 @@ use DB;
  * @method static \Illuminate\Database\Query\Builder|\App\Book whereShelfLocation($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Book whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Book whereUpdatedAt($value)
+ * @property \Carbon\Carbon $deleted_at
+ * @property-read \App\Author $author
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $borrowers
+ * @method static \Illuminate\Database\Query\Builder|\App\Book whereDeletedAt($value)
  */
 class Book extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'books';
 
     protected $fillable = [
@@ -41,6 +48,8 @@ class Book extends Model
         'quantities',
         'shelf_location'
     ];
+
+    protected $dates = ['deleted_at'];
 
     /**
      * Scope query for the server side processing for books datatable. This is with limit.
@@ -168,6 +177,25 @@ class Book extends Model
         return $query;
     }
 
+    /**
+     * The author for this particular book.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo(Author::class);
+    }
+
+    /**
+     * All borrowers for this particular book.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function borrowers()
+    {
+        return $this->belongsToMany(User::class,'borrowed_books','book_id','user_id');
+    }
 
     /**
      * Date validation
