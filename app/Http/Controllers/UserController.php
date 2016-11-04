@@ -101,7 +101,7 @@ class UserController extends Controller
 
         foreach($membersWithLimit as $member)
         {
-            $editButton = '<button class="edit-member btn-actions btn btn-primary" title="Edit" data-id="'.$member->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
+            $editButton = '<button class="edit-member btn-actions btn btn-primary" data-action="edit_member" data-toggle="modal" data-target="#member_modal_form" title="Edit" data-id="'.$member->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             $deleteButton = '<button class="delete-member btn-actions btn btn-danger" title="Delete" data-id="'.$member->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
             $data = [

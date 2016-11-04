@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Author;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
+use DB;
 
 class AdminController extends Controller
 {
@@ -26,7 +28,11 @@ class AdminController extends Controller
      */
     public function books()
     {
-        return view('admin.books');
+        //get all author name and ids
+        $authors = Author::select('id', DB::raw('CONCAT(first_name," ",middle_name," ",last_name) AS author_name'))
+                            ->orderBy('author_name','asc')->lists('author_name','id')->toArray();
+
+        return view('admin.books',compact('authors'));
     }
 
     /**
