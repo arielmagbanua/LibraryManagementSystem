@@ -16,7 +16,7 @@ Route::get('/home', ['middleware' => 'guest', function () {
 }]);
 
 Route::get('/', function () {
-    return view('app');
+    return view('welcome');
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function()

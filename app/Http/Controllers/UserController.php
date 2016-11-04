@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\User;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 class UserController extends Controller
 {
     /**
@@ -97,17 +94,13 @@ class UserController extends Controller
     {
         $inputs = $request->all();
         $param = $inputs['search']['value'];
-
         $allMembersCount = User::allMembers()->count();
         $totalFiltered = $allMembersCount;
-
         $membersData = [];
-
         $membersWithLimit = User::searchMembersWithLimit($inputs)->get();
 
         foreach($membersWithLimit as $member)
         {
-
             $editButton = '<button class="edit-member btn-actions btn btn-primary" title="Edit" data-id="'.$member->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
             $deleteButton = '<button class="delete-member btn-actions btn btn-danger" title="Delete" data-id="'.$member->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
