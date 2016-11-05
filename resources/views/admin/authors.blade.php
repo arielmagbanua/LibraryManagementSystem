@@ -195,7 +195,7 @@
                     }
                     else
                     {
-                        $('.date-field').val('');
+                        $('#author_modal_form :input').val('');
 
                         //change the title of the modal
                         $('.modal-title').html('Add Author');
@@ -218,6 +218,8 @@
 
                 if(invokerAction=='delete_author')
                 {
+                    $('.modal-title').html('Delete Author');
+
                     var authorID = invoker.data('id');
                     console.log(authorID);
                     //load the id to the hidden field of the modal for deletion

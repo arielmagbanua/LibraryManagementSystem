@@ -110,8 +110,6 @@ class Author extends Model
     public function scopeSearchAuthorsWithoutLimit($query, $inputs)
     {
         $param = $inputs['search']['value'];
-        $start = $inputs['start'];
-        $length = $inputs['length'];
 
         $columns = [
             // datatable column index  => database column name

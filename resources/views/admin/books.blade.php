@@ -200,6 +200,8 @@
                     }
                     else
                     {
+                        $('#book_modal_form :input').val('');
+
                         //change the title of the modal
                         $('.modal-title').html('Add Book');
                         //change the text of submit button
@@ -221,6 +223,8 @@
 
                 if(invokerAction=='delete_book')
                 {
+                    $('.modal-title').html('Delete Book');
+
                     var bookID = invoker.data('id');
                     console.log(bookID);
                     //load the id to the hidden field of the modal for deletion

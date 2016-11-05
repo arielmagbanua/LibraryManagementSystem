@@ -219,8 +219,8 @@
                     }
                     else
                     {
-                        $('.date-field').val('');
                         $('.password-field').show();
+                        $('#member_modal_form :input').val('');
 
                         //change the title of the modal
                         $('.modal-title').html('Add Member');
@@ -243,6 +243,8 @@
 
                 if(invokerAction=='delete_member')
                 {
+                    $('.modal-title').html('Delete Member');
+
                     var memberID = invoker.data('id');
                     console.log(memberID);
                     //load the id to the hidden field of the modal for deletion
