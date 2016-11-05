@@ -240,14 +240,16 @@
                     {
                         //remove the record in datatable
                         var table = $('#books_datatable').DataTable();
-                        var row = $('#book-'+bookID+'-title').parents('tr');
-                        table.row(row).remove().draw();
+                        //var row = $('#book-'+bookID+'-title').parents('tr');
+                        //table.row(row).remove().draw();
 
-                        //Change the message of modal and hide the delete button
-                        $('#delete_modal_message').html('The book was successfully deleted!');
-                        deleteButton.hide();
-                        deleteCancelButton.html('Close');
-                        deleteCancelButton.removeAttr('disabled');
+                        table.ajax.reload(function(){
+                            //Change the message of modal and hide the delete button
+                            $('#delete_modal_message').html('The book was successfully deleted!');
+                            deleteButton.hide();
+                            deleteCancelButton.html('Close');
+                            deleteCancelButton.removeAttr('disabled');
+                        });
                     }
                 });
 

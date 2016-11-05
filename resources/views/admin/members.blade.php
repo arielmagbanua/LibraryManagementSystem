@@ -255,14 +255,16 @@
                     {
                         //remove the record in datatable
                         var table = $('#members_datatable').DataTable();
-                        var row = $('#member-'+memberID+'-first_name').parents('tr');
-                        table.row(row).remove().draw();
+                        //var row = $('#member-'+memberID+'-first_name').parents('tr');
+                        //table.row(row).remove().draw();
 
-                        //Change the message of modal and hide the delete button
-                        $('#delete_modal_message').html('The member was successfully deleted!');
-                        deleteButton.hide();
-                        deleteCancelButton.html('Close');
-                        deleteCancelButton.removeAttr('disabled');
+                        table.ajax.reload(function(){
+                            //Change the message of modal and hide the delete button
+                            $('#delete_modal_message').html('The member was successfully deleted!');
+                            deleteButton.hide();
+                            deleteCancelButton.html('Close');
+                            deleteCancelButton.removeAttr('disabled');
+                        });
                     }
                 });
 
