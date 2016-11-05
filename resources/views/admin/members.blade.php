@@ -72,32 +72,11 @@
     </div>
 
     <!-- Delete modal -->
-    <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Delete Member</h4>
-                </div>
-
-                <div class="modal-body">
-                    {!! Form::hidden('member_id_to_delete', '', ['id' => 'member_id_to_delete', 'class' => 'form-control']) !!}
-                    <p id="delete_modal_message">Are you sure you want to delete this member?</p>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" id="delete_cancel_button" data-dismiss="modal">Cancel</button>
-                    <button type="button" id="delete_member_button" class="btn btn-danger"><span class="delete-label">Yes Delete</span></button>
-                </div>
-
-            </div>
-        </div>
-    </div>
+    @include('common.delete_modal')
 
     <h2>Members</h2>
     <hr>
-    <table id="members_datatable" class="table">
+    <table id="members_datatable" class="table table-hover">
         <thead>
             <tr>
                 <th>ID</th>
@@ -117,7 +96,6 @@
 @endsection
 
 @section('footer-links')
-    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
@@ -196,10 +174,10 @@
                     var memberID = invoker.data('id');
                     console.log(memberID);
                     //load the id to the hidden field of the modal for deletion
-                    $('#member_id_to_delete').val(memberID);
+                    $('#id_to_delete').val(memberID);
 
                     //set the yes button to defaults
-                    var deleteButton = $('#delete_member_button');
+                    var deleteButton = $('#delete_button');
                     var deleteLabel = deleteButton.find('span.delete-label');
                     deleteLabel.html('Yes Delete');
                     deleteLabel.removeClass('fa fa-spin fa-spinner');
@@ -213,10 +191,10 @@
 
             });
 
-            $('#delete_member_button').click(function()
+            $('#delete_button').click(function()
             {
                 //get the member id
-                var memberID = $('#member_id_to_delete').val();
+                var memberID = $('#id_to_delete').val();
                 console.log(memberID);
 
                 var deleteButton = $(this);
@@ -239,8 +217,8 @@
                     {
                         //remove the record in datatable
                         var table = $('#members_datatable').DataTable();
-                        var memberRow = $('#member-'+memberID+'-first_name').parents('tr');
-                        table.row(memberRow).remove().draw();
+                        var row = $('#member-'+memberID+'-first_name').parents('tr');
+                        table.row(row).remove().draw();
 
                         //Change the message of modal and hide the delete button
                         $('#delete_modal_message').html('The member was successfully deleted!');
