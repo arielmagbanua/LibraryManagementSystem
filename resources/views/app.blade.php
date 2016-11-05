@@ -64,8 +64,9 @@
 
                     @if(auth()->check() && auth()->user()->account_type == 2)
                         <li class="@yield('member-home-class')"><a href="{{ url('member/home') }}">Home @yield('member-home-current')</a></li>
-                        <li class="@yield('member-books-class')"><a href="{{ url('member/books') }}">Books @yield('member-home-current')</a></li>
-                        <li class="@yield('member-borrowed-class')"><a href="{{ url('member/borrowed') }}">Borrowed Books @yield('member-home-current')</a></li>
+                        <li class="@yield('member-books-class')"><a href="{{ url('member/books') }}">Books @yield('member-books-current')</a></li>
+                        <li class="@yield('member-borrowed-class')"><a href="{{ url('member/borrowed/books') }}">Borrowed Books @yield('member-borrowed-current')</a></li>
+                        <li class="@yield('member-pending-borrow-class')"><a href="{{ url('member/pending/borrow/books') }}">Pending  Books @yield('member-pending-borrow-current')</a></li>
                     @endif
 
                 </ul>

@@ -98,6 +98,13 @@ class MemberController extends Controller
         //
     }
 
+    /**
+     * The borrow process
+     *
+     * @param Request $request
+     * @param $bookID
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function borrow(Request $request, $bookID)
     {
         //get the current user who will borrow.
@@ -134,5 +141,15 @@ class MemberController extends Controller
         }
 
         return response()->json($responseData,200);
+    }
+
+    public function borrowedBooks()
+    {
+        return view('member.borrowed_books');
+    }
+
+    public function pendingBorrowedBooks()
+    {
+        return view('member.pending_books');
     }
 }
