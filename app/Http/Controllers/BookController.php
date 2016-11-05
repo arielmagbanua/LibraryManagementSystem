@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Log;
 
 class BookController extends Controller
 {
@@ -184,17 +185,19 @@ class BookController extends Controller
 
         $booksData = [];
 
-        $booksWithLimit = Book::searchBooksWithLimit($inputs)->get();
+        $booksWithLimit = Book::searchBooksCanBeBorrowedWithLimit($inputs)->get();
 
         foreach($booksWithLimit as $book)
         {
             $borrowButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#borrow_book_modal" title="Borrow" data-id="'.$book->id.'" data-action="borrow_book">Borrow</button>';
 
+            Log::info($book);
+
             $data = [
                 'title' => '<span id="book-'.$book->id.'-title">'.$book->title.'</span>',
                 'author' => '<span id="book-'.$book->id.'-author" data-author="'.$book->author_id.'">'.$book->author_name.'</span>',
                 'isbn' => '<span id="book-'.$book->id.'-isbn">'.$book->isbn.'</span>',
-                'quantity' => '<span id="book-'.$book->id.'-quantity">'.$book->quantity.'</span>',
+                'quantity' => '<span id="book-'.$book->id.'-quantity">'.$book->available_quantity.'</span>',
                 'overdue_fine' => '<span id="book-'.$book->id.'-overdue_fine">'.$book->overdue_fine.'</span>',
                 'shelf_location' => '<span id="book-'.$book->id.'-shelf_location">'.$book->shelf_location.'</span>',
                 'actions' => $borrowButton
@@ -205,7 +208,7 @@ class BookController extends Controller
 
         if(!empty($param) || $param!='')
         {
-            $totalFiltered = Book::searchBooksWithoutLimit($inputs)->count();
+            $totalFiltered = Book::searchBooksCanBeBorrowedWithoutLimit($inputs)->count();
         }
 
         $responseData = array(

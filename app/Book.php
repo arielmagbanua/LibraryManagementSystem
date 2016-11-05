@@ -70,18 +70,20 @@ class Book extends Model
             0 => 'books.title',
             1 => 'author_name',
             2 => 'books.isbn',
-            3 => 'books.quantity',
+            3 => 'available_quantity',
             4 => 'books.overdue_fine',
             5 => 'books.shelf_location',
             6 => 'books.created_at'
         ];
 
-        $authorConcat = "authors.first_name,' ',authors.middle_name,' ',authors.last_name";
 
-        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"));
+        $authorConcat = "authors.first_name,' ',authors.middle_name,' ',authors.last_name";
+        $borrowedSQL = '(SELECT COUNT(*) FROM borrowed_books WHERE borrowed_books.book_id = books.id AND borrowed_books.status <> 0)';
+
+        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"),DB::raw("(books.quantity - $borrowedSQL) AS available_quantity"));
         $query->join('authors', 'authors.id', '=', 'books.author_id');
 
-        $query->whereRaw(DB::raw('books.quantity < (SELECT COUNT(*) FROM borrowed_books WHERE borrowed_books.book_id = books.id AND borrowed_books.status = 1)'));
+        $query->whereRaw(DB::raw("books.quantity > $borrowedSQL"));
 
         if(!empty($param) || $param!='')
         {
@@ -115,7 +117,7 @@ class Book extends Model
     }
 
     /**
-     * Scope query for the server side processing for books datatable that cen be borrowed. This is with limit.
+     * Scope query for the server side processing for books datatable that cen be borrowed. This is withou limit.
      *
      * @param $query
      * @param $inputs
@@ -130,18 +132,19 @@ class Book extends Model
             0 => 'books.title',
             1 => 'author_name',
             2 => 'books.isbn',
-            3 => 'books.quantity',
+            3 => 'available_quantity',
             4 => 'books.overdue_fine',
             5 => 'books.shelf_location',
             6 => 'books.created_at'
         ];
 
         $authorConcat = "authors.first_name,' ',authors.middle_name,' ',authors.last_name";
+        $borrowedSQL = '(SELECT COUNT(*) FROM borrowed_books WHERE borrowed_books.book_id = books.id AND borrowed_books.status <> 0)';
 
-        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"));
+        $query->select('books.*',DB::raw("CONCAT($authorConcat) AS author_name"),DB::raw("(books.quantity - $borrowedSQL) AS available_quantity"));
         $query->join('authors', 'authors.id', '=', 'books.author_id');
 
-        $query->whereRaw(DB::raw('books.quantity < (SELECT COUNT(*) FROM borrowed_books WHERE borrowed_books.book_id = books.id AND borrowed_books.status = 1)'));
+        $query->whereRaw(DB::raw("books.quantity > $borrowedSQL"));
 
         if(!empty($param) || $param!='')
         {

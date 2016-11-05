@@ -46,7 +46,7 @@
                 <th>Title</th>
                 <th>Author</th>
                 <th>ISBN</th>
-                <th>Quantity</th>
+                <th>Available</th>
                 <th>Overdue Fine</th>
                 <th>Shelf Location</th>
                 <th>Actions</th>
@@ -147,23 +147,22 @@
                         if(data.status=='fail')
                         {
                             $('.modal-title').html('Ooppps!');
-
-                            //Change the message of modal and hide the delete button
                             $('#borrow_modal_message').html(data.message);
-                            borrowButton.hide();
                             borrowCancelButton.html('Ok, Understand');
-                            borrowCancelButton.removeAttr('disabled');
                         }
                         else
                         {
-                            table.ajax.reload(function(){
-                                //Change the message of modal and hide the delete button
-                                $('#borrow_modal_message').html(data.message);
-                                borrowButton.hide();
-                                borrowCancelButton.html('Close');
-                                borrowCancelButton.removeAttr('disabled');
-                            });
+                            $('.modal-title').html('Borrow');
+                            $('#borrow_modal_message').html(data.message);
+                            borrowCancelButton.html('Close');
                         }
+
+                        table.ajax.reload(function(){
+                            //Change the message of modal and hide the delete button
+                            borrowButton.hide();
+                            borrowCancelButton.removeAttr('disabled');
+                        });
+
                     }
                 });
 

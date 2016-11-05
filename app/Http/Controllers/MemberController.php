@@ -129,7 +129,7 @@ class MemberController extends Controller
             $book = Book::find($bookID);
             $borrowedBooks->save($book);
 
-            $responseData['status'] = 'fail';
+            $responseData['status'] = 'success';
             $responseData['message'] = 'Borrow request sent. It would be approved by a librarian soon!';
         }
 
