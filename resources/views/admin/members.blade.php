@@ -78,8 +78,8 @@
                         </div>
 
                         <div class="form-group password-field">
-                            {!! Form::label('confirm_password', 'Confirm Password') !!}
-                            {!! Form::password('confirm_password', ['class' => 'form-control']) !!}
+                            {!! Form::label('password_confirmation', 'Confirm Password') !!}
+                            {!! Form::password('password_confirmation', ['class' => 'form-control']) !!}
                         </div>
 
                         <!-- Error Container -->
@@ -195,6 +195,7 @@
 
                         //hide all password fields
                         $('.password-field').hide();
+                        $('#email').prop('readonly',true);
 
                         //row base ID
                         var rowBaseID = '#member-'+memberID+'-';
@@ -215,12 +216,12 @@
                         modal.find('#address').val(address);
                         modal.find('#email').val(email);
                         modal.find('#birth_date').val(birthDate);
-
                     }
                     else
                     {
                         $('.password-field').show();
                         $('#member_modal_form :input').val('');
+                        $('#email').removeAttr('readonly');
 
                         //change the title of the modal
                         $('.modal-title').html('Add Member');

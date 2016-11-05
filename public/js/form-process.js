@@ -62,6 +62,7 @@ $(document).on('submit','.modal_form',function(e)
 
             form.find('.this_errors').append(errorsHtml);
             form.find('.modal-form-submit-button').removeAttr('disabled');
+            form.find('.modal-cancel-button').removeAttr('disabled');
 
             saveLabel.html('Save');
             saveLabel.removeClass('fa fa-spin fa-spinner');

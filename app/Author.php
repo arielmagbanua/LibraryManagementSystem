@@ -72,22 +72,25 @@ class Author extends Model
 
         if(!empty($param) || $param!='')
         {
-            $query->where('first_name','LIKE',"%$param%")
-                  ->orWhere('middle_name','LIKE',"%$param%")
-                  ->orWhere('last_name','LIKE',"%$param%")
-                  ->orWhere('description','LIKE',"%$param%");
+            $query->where(function($query) use ($param){
 
-            //for birth_date
-            if($this->validateDate($param))
-            {
-                $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
-            }
+                $query->where('first_name','LIKE',"%$param%")
+                    ->orWhere('middle_name','LIKE',"%$param%")
+                    ->orWhere('last_name','LIKE',"%$param%")
+                    ->orWhere('description','LIKE',"%$param%");
 
-            if(is_numeric($param))
-            {
-                $paramInt = intval($param);
-                $query->orWhere('id','=',$paramInt);
-            }
+                //for birth_date
+                if($this->validateDate($param))
+                {
+                    $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
+                }
+
+                if(is_numeric($param))
+                {
+                    $paramInt = intval($param);
+                    $query->orWhere('id','=',$paramInt);
+                }
+            });
         }
 
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
@@ -123,22 +126,24 @@ class Author extends Model
 
         if(!empty($param) || $param!='')
         {
-            $query->where('first_name','LIKE',"%$param%")
-                ->orWhere('middle_name','LIKE',"%$param%")
-                ->orWhere('last_name','LIKE',"%$param%")
-                ->orWhere('description','LIKE',"%$param%");
+            $query->where(function($query) use ($param){
+                $query->where('first_name','LIKE',"%$param%")
+                    ->orWhere('middle_name','LIKE',"%$param%")
+                    ->orWhere('last_name','LIKE',"%$param%")
+                    ->orWhere('description','LIKE',"%$param%");
 
-            //for birth_date
-            if($this->validateDate($param))
-            {
-                $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
-            }
+                //for birth_date
+                if($this->validateDate($param))
+                {
+                    $query->orWhere(DB::raw('DATE(birth_date)'),'=',DB::raw("DATE('$param')"));
+                }
 
-            if(is_numeric($param))
-            {
-                $paramInt = intval($param);
-                $query->orWhere('id','=',$paramInt);
-            }
+                if(is_numeric($param))
+                {
+                    $paramInt = intval($param);
+                    $query->orWhere('id','=',$paramInt);
+                }
+            });
         }
 
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);

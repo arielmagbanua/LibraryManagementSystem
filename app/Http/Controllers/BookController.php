@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -33,10 +33,10 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param AddBookRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(AddBookRequest $request)
     {
         $inputs = $request->all();
         $inputs['title'] = addslashes($inputs['title']);
@@ -77,11 +77,11 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param AddBookRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(AddBookRequest $request, $id)
     {
         $inputs = $request->all();
         $book = Book::find($id);

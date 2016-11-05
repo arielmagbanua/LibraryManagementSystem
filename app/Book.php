@@ -95,12 +95,6 @@ class Book extends Model
                       ->orWhere('books.overdue_fine','=',$paramDouble);
             }
 
-            //for created_at
-            if($this->validateDate($param))
-            {
-                $query->orWhere(DB::raw('DATE(books.created_at)'),'=',DB::raw("DATE('$param')"));
-            }
-
             //for author_id
             $query->orWhere('authors.first_name','LIKE',"%$param%")
                   ->orWhere('authors.middle_name','LIKE',"%$param%")
@@ -159,12 +153,6 @@ class Book extends Model
 
                 $query->orWhere('books.quantity','=',$paramDouble)
                     ->orWhere('books.overdue_fine','=',$paramDouble);
-            }
-
-            //for created_at
-            if($this->validateDate($param))
-            {
-                $query->orWhere(DB::raw('DATE(books.created_at)'),'=',DB::raw("DATE('$param')"));
             }
 
             //for author_id

@@ -6,6 +6,7 @@ use App\Author;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddAuthorRequest;
 
 class AuthorController extends Controller
 {
@@ -32,10 +33,10 @@ class AuthorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param AddAuthorRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(AddAuthorRequest $request)
     {
         $author = Author::create($request->all());
 
@@ -73,11 +74,11 @@ class AuthorController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param AddAuthorRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(AddAuthorRequest $request, $id)
     {
         $inputs = $request->all();
         $author = Author::find($id);
