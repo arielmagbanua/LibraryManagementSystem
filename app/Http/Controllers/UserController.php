@@ -41,7 +41,7 @@ class UserController extends Controller
         $user->first_name = $inputs['first_name'];
         $user->middle_name = $inputs['middle_name'];
         $user->last_name = $inputs['last_name'];
-        $user->address = $inputs['address'];
+        $user->address = addslashes($inputs['address']);
         $user->email = $inputs['email'];
         $user->birth_date = $inputs['birth_date'];
 
@@ -55,6 +55,7 @@ class UserController extends Controller
 
         $responseData = [
             'id' => $user->id,
+            'process' => 'add_user',
             'status' => 'success'
         ];
 
@@ -86,13 +87,31 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $inputs = $request->all();
+        $user = User::find($id);
+
+        $user->first_name = $inputs['first_name'];
+        $user->middle_name = $inputs['middle_name'];
+        $user->last_name = $inputs['last_name'];
+        $user->address = addslashes($inputs['address']);
+        $user->email = $inputs['email'];
+        $user->birth_date = $inputs['birth_date'];
+        $user->save();
+
+        $responseData = [
+            'id' => $user->id,
+            'status' => 'success',
+            'process' => 'update_user',
+            'data' => $user
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**

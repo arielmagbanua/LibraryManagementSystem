@@ -156,33 +156,60 @@
 
             $('#book_modal_form').on('show.bs.modal', function (e) {
 
-                var invoker = $(e.relatedTarget);
-                var invokerAction = invoker.data('action');
-
-                var bookForm = $('#book_form');
-
-                if(invokerAction=='edit_book')
+                if(e.namespace === 'bs.modal')
                 {
-                    var bookID = invoker.data('id');
-                    console.log(bookID);
 
-                    //change the title of the modal
-                    $('.modal-title').html('Edit Book');
-                    //change the text of submit button
-                    $('.save-label').html('Save Changes');
+                    var invoker = $(e.relatedTarget);
+                    var invokerAction = invoker.data('action');
 
-                    bookForm.attr('action', baseURL+'/book/'+bookID);
-                    bookForm.attr('method', 'PATCH');
-                }
-                else
-                {
-                    //change the title of the modal
-                    $('.modal-title').html('Add Book');
-                    //change the text of submit button
-                    $('.save-label').html('Save');
+                    var bookForm = $('#book_form');
 
-                    bookForm.attr('action', baseURL+'/book');
-                    bookForm.attr('method', 'POST');
+                    if(invokerAction=='edit_book')
+                    {
+                        var bookID = invoker.data('id');
+                        console.log(bookID);
+
+                        //change the title of the modal
+                        $('.modal-title').html('Edit Book');
+                        //change the text of submit button
+                        $('.save-label').html('Save Changes');
+
+                        bookForm.attr('action', baseURL+'/book/'+bookID);
+                        bookForm.attr('method', 'PATCH');
+                        bookForm.data('success','Book updated successfully!');
+
+                        //row base ID
+                        var rowBaseID = '#book-'+bookID+'-';
+                        var title = $(rowBaseID+'title').html();
+                        var authorID = $(rowBaseID+'author').data('author');
+                        var isbn = $(rowBaseID+'isbn').html();
+                        var quantity = $(rowBaseID+'quantity').html();
+                        var overdueFine = $(rowBaseID+'overdue_fine').html();
+                        var shelfLocation = $(rowBaseID+'shelf_location').html();
+
+                        console.log(authorID);
+
+                        //load the data in the form
+                        var modal = $('#book_modal_form');
+                        modal.find('#title').val(title);
+                        modal.find('#author_id').val(authorID).trigger('change');
+                        modal.find('#isbn').val(isbn);
+                        modal.find('#quantity').val(quantity);
+                        modal.find('#overdue_fine').val(overdueFine);
+                        modal.find('#shelf_location').val(shelfLocation);
+                    }
+                    else
+                    {
+                        //change the title of the modal
+                        $('.modal-title').html('Add Book');
+                        //change the text of submit button
+                        $('.save-label').html('Save');
+
+                        bookForm.attr('action', baseURL+'/book');
+                        bookForm.attr('method', 'POST');
+                        bookForm.data('success','Book added successfully!');
+                    }
+
                 }
 
             });

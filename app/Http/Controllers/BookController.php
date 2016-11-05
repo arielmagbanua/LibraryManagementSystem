@@ -38,10 +38,14 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $book = Book::create($request->all());
+        $inputs = $request->all();
+        $inputs['title'] = addslashes($inputs['title']);
+
+        $book = Book::create($inputs);
 
         $responseData = [
             'id' => $book->id,
+            'process' => 'add_book',
             'status' => 'success'
         ];
 
@@ -73,13 +77,31 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $inputs = $request->all();
+        $book = Book::find($id);
+
+        $book->title = addslashes($inputs['title']);
+        $book->author_id = $inputs['author_id'];
+        $book->isbn = $inputs['isbn'];
+        $book->quantity = $inputs['quantity'];
+        $book->overdue_fine = $inputs['overdue_fine'];
+        $book->shelf_location = $inputs['shelf_location'];
+        $book->save();
+
+        $responseData = [
+            'id' => $book->id,
+            'status' => 'success',
+            'process' => 'update_book',
+            'data' => $book
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**
@@ -120,7 +142,7 @@ class BookController extends Controller
 
             $data = [
                 'title' => '<span id="book-'.$book->id.'-title">'.$book->title.'</span>',
-                'author' => '<span id="book-'.$book->id.'-author">'.$book->author_name.'</span>',
+                'author' => '<span id="book-'.$book->id.'-author" data-author="'.$book->author_id.'">'.$book->author_name.'</span>',
                 'isbn' => '<span id="book-'.$book->id.'-isbn">'.$book->isbn.'</span>',
                 'quantity' => '<span id="book-'.$book->id.'-quantity">'.$book->quantity.'</span>',
                 'overdue_fine' => '<span id="book-'.$book->id.'-overdue_fine">'.$book->overdue_fine.'</span>',

@@ -41,6 +41,7 @@ class AuthorController extends Controller
 
         $responseData = [
             'id' => $author->id,
+            'process' => 'add_author',
             'status' => 'success'
         ];
 
@@ -78,7 +79,24 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $inputs = $request->all();
+        $author = Author::find($id);
+
+        $author->first_name = $inputs['first_name'];
+        $author->middle_name = $inputs['middle_name'];
+        $author->last_name = $inputs['last_name'];
+        $author->description = $inputs['description'];
+        $author->birth_date = $inputs['birth_date'];
+        $author->save();
+
+        $responseData = [
+            'id' => $author->id,
+            'status' => 'success',
+            'process' => 'update_author',
+            'data' => $author
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**

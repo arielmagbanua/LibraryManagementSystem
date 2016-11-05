@@ -45,7 +45,8 @@ class Book extends Model
         'title',
         'author_id',
         'isbn',
-        'quantities',
+        'quantity',
+        'overdue_fine',
         'shelf_location'
     ];
 

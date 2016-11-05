@@ -64,7 +64,7 @@
 
                     <div class="form-group">
                         {!! Form::label('birth_date', 'Date of Birth') !!}
-                        {!! Form::text('birth_date', '', ['class' => 'form-control']) !!}
+                        {!! Form::text('birth_date', '', ['class' => 'form-control date-field']) !!}
                     </div>
 
                     <!-- Error Container -->
@@ -153,33 +153,60 @@
 
             $('#author_modal_form').on('show.bs.modal', function (e) {
 
-                var invoker = $(e.relatedTarget);
-                var invokerAction = invoker.data('action');
-
-                var authorForm = $('#author_form');
-
-                if(invokerAction=='edit_author')
+                if(e.namespace === 'bs.modal')
                 {
-                    var authorID = invoker.data('id');
-                    console.log(authorID);
 
-                    //change the title of the modal
-                    $('.modal-title').html('Edit Author');
-                    //change the text of submit button
-                    $('.save-label').html('Save Changes');
+                    var invoker = $(e.relatedTarget);
+                    var invokerAction = invoker.data('action');
 
-                    authorForm.attr('action', baseURL+'/author/'+authorID);
-                    authorForm.attr('method', 'PATCH');
-                }
-                else
-                {
-                    //change the title of the modal
-                    $('.modal-title').html('Add Author');
-                    //change the text of submit button
-                    $('.save-label').html('Save');
+                    var authorForm = $('#author_form');
 
-                    authorForm.attr('action', baseURL+'/author');
-                    authorForm.attr('method', 'POST');
+                    if(invokerAction=='edit_author')
+                    {
+                        var authorID = invoker.data('id');
+                        console.log(authorID);
+
+                        //change the title of the modal
+                        $('.modal-title').html('Edit Author');
+                        //change the text of submit button
+                        $('.save-label').html('Save Changes');
+
+                        authorForm.attr('action', baseURL+'/author/'+authorID);
+                        authorForm.attr('method', 'PATCH');
+                        authorForm.data('success','Author updated successfully!');
+
+                        //row base ID
+                        var rowBaseID = '#author-'+authorID+'-';
+
+                        //get all the data from row
+                        var firstName = $(rowBaseID+'first_name').html();
+                        var middleName = $(rowBaseID+'middle_name').html();
+                        var lastName = $(rowBaseID+'last_name').html();
+                        var description = $(rowBaseID+'description').html();
+                        var birthDate = $(rowBaseID+'birth_date').html();
+
+                        //load the data in the form
+                        var modal = $('#author_modal_form');
+                        modal.find('#first_name').val(firstName);
+                        modal.find('#middle_name').val(middleName);
+                        modal.find('#last_name').val(lastName);
+                        modal.find('#description').val(description);
+                        modal.find('#birth_date').val(birthDate);
+                    }
+                    else
+                    {
+                        $('.date-field').val('');
+
+                        //change the title of the modal
+                        $('.modal-title').html('Add Author');
+                        //change the text of submit button
+                        $('.save-label').html('Save');
+
+                        authorForm.attr('action', baseURL+'/author');
+                        authorForm.attr('method', 'POST');
+                        authorForm.data('success','Author added successfully!');
+                    }
+
                 }
 
             });

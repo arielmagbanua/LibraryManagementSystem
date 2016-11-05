@@ -69,17 +69,17 @@
 
                         <div class="form-group">
                             {!! Form::label('birth_date', 'Date of Birth') !!}
-                            {!! Form::text('birth_date', '', ['class' => 'form-control']) !!}
+                            {!! Form::text('birth_date', '', ['class' => 'form-control date-field']) !!}
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group password-field">
                             {!! Form::label('password', 'Password') !!}
-                            {!! Form::password('password', ['class' => 'form-control password-field']) !!}
+                            {!! Form::password('password', ['class' => 'form-control']) !!}
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group password-field">
                             {!! Form::label('confirm_password', 'Confirm Password') !!}
-                            {!! Form::password('confirm_password', ['class' => 'form-control password-field']) !!}
+                            {!! Form::password('confirm_password', ['class' => 'form-control']) !!}
                         </div>
 
                         <!-- Error Container -->
@@ -171,33 +171,67 @@
 
             $('#member_modal_form').on('show.bs.modal', function (e) {
 
-                var invoker = $(e.relatedTarget);
-                var invokerAction = invoker.data('action');
-
-                var memberForm = $('#member_form');
-
-                if(invokerAction=='edit_member')
+                if(e.namespace === 'bs.modal')
                 {
-                    var memberID = invoker.data('id');
-                    console.log(memberID);
 
-                    //change the title of the modal
-                    $('.modal-title').html('Edit Member');
-                    //change the text of submit button
-                    $('.save-label').html('Save Changes');
+                    var invoker = $(e.relatedTarget);
+                    var invokerAction = invoker.data('action');
 
-                    memberForm.attr('action', baseURL+'/user/'+memberID);
-                    memberForm.attr('method', 'PATCH');
-                }
-                else
-                {
-                    //change the title of the modal
-                    $('.modal-title').html('Add Member');
-                    //change the text of submit button
-                    $('.save-label').html('Save');
+                    var memberForm = $('#member_form');
 
-                    memberForm.attr('action', baseURL+'/user');
-                    memberForm.attr('method', 'POST');
+                    if(invokerAction=='edit_member')
+                    {
+                        var memberID = invoker.data('id');
+                        console.log(memberID);
+
+                        //change the title of the modal
+                        $('.modal-title').html('Edit Member');
+                        //change the text of submit button
+                        $('.save-label').html('Save Changes');
+
+                        memberForm.attr('action',baseURL+'/user/'+memberID);
+                        memberForm.attr('method','PATCH');
+                        memberForm.data('success','Member updated successfully!');
+
+                        //hide all password fields
+                        $('.password-field').hide();
+
+                        //row base ID
+                        var rowBaseID = '#member-'+memberID+'-';
+
+                        //get all the data from row
+                        var firstName = $(rowBaseID+'first_name').html();
+                        var middleName = $(rowBaseID+'middle_name').html();
+                        var lastName = $(rowBaseID+'last_name').html();
+                        var address = $(rowBaseID+'address').html();
+                        var email = $(rowBaseID+'email').html();
+                        var birthDate = $(rowBaseID+'birth_date').html();
+
+                        //load the data in the form
+                        var modal = $('#member_modal_form');
+                        modal.find('#first_name').val(firstName);
+                        modal.find('#middle_name').val(middleName);
+                        modal.find('#last_name').val(lastName);
+                        modal.find('#address').val(address);
+                        modal.find('#email').val(email);
+                        modal.find('#birth_date').val(birthDate);
+
+                    }
+                    else
+                    {
+                        $('.date-field').val('');
+                        $('.password-field').show();
+
+                        //change the title of the modal
+                        $('.modal-title').html('Add Member');
+                        //change the text of submit button
+                        $('.save-label').html('Save');
+
+                        memberForm.attr('action', baseURL+'/user');
+                        memberForm.attr('method', 'POST');
+                        memberForm.data('success','Member added successfully!');
+                    }
+
                 }
 
             });

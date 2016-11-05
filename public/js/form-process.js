@@ -80,23 +80,126 @@ $(document).on('submit','.modal_form',function(e)
 
             //reload the datatable
             var table = $(form.data('datatable')).DataTable();
-            table.ajax.reload(function(){
+            var successModal = $('#success_modal');
+            var successModalMessage = $('#success_modal_message');
 
-                form.find('.modal-form-submit-button').removeAttr('disabled');
-                form.find('.modal-cancel-button').removeAttr('disabled');
-                saveLabel.removeClass('fa fa-spin fa-spinner');
-                saveLabel.html('Save');
+            switch(data.process)
+            {
+                case 'update_user':
 
-                //close the modal and open the success modal
-                $(form.data('parentmodal')).modal('hide');
+                    //update the row in the datatable
+                    var updatedItem = data.data;
+                    var id = data.id;
 
-                console.log(form.data('success'));
+                    //row base ID
+                    var rowBaseID = '#member-'+id+'-';
 
-                var successModal = $('#success_modal');
-                $('#success_modal_message').html(form.data('success'));
-                successModal.modal('show');
+                    //get all the data from row
+                    $(rowBaseID+'first_name').html(updatedItem.first_name);
+                    $(rowBaseID+'middle_name').html(updatedItem.middle_name);
+                    $(rowBaseID+'last_name').html(updatedItem.last_name);
+                    $(rowBaseID+'address').html(updatedItem.address);
+                    $(rowBaseID+'email').html(updatedItem.email);
+                    $(rowBaseID+'birth_date').html(updatedItem.birth_date);
 
-            },false);
+                    form.find('.modal-form-submit-button').removeAttr('disabled');
+                    form.find('.modal-cancel-button').removeAttr('disabled');
+                    saveLabel.removeClass('fa fa-spin fa-spinner');
+                    saveLabel.html('Save Changes');
+
+                    //close the modal and open the success modal
+                    $(form.data('parentmodal')).modal('hide');
+
+                    console.log(form.data('success'));
+                    successModalMessage.html(form.data('success'));
+                    successModal.modal('show');
+
+                    break;
+
+                case 'update_book':
+
+                    //update the row in the datatable
+                    var updatedItem = data.data;
+                    var id = data.id;
+
+                    //row base ID
+                    var rowBaseID = '#book-'+id+'-';
+
+                    //get all the data from row
+                    $(rowBaseID+'title').html(updatedItem.title);
+
+                    //get the display value if the author_id
+                    var author =  $("#author_id option:selected").text();
+                    var authorTD = $(rowBaseID+'author');
+                    authorTD.html(author);
+                    authorTD.data('author',data.author_id);
+
+                    $(rowBaseID+'isbn').html(updatedItem.isbn);
+                    $(rowBaseID+'quantity').html(updatedItem.quantity);
+                    $(rowBaseID+'overdue_fine').html(updatedItem.overdue_fine);
+                    $(rowBaseID+'shelf_location').html(updatedItem.shelf_location);
+
+                    form.find('.modal-form-submit-button').removeAttr('disabled');
+                    form.find('.modal-cancel-button').removeAttr('disabled');
+                    saveLabel.removeClass('fa fa-spin fa-spinner');
+                    saveLabel.html('Save Changes');
+
+                    //close the modal and open the success modal
+                    $(form.data('parentmodal')).modal('hide');
+
+                    console.log(form.data('success'));
+                    successModalMessage.html(form.data('success'));
+                    successModal.modal('show');
+
+                    break;
+
+                case 'update_author':
+
+                    //update the row in the datatable
+                    var updatedItem = data.data;
+                    var id = data.id;
+
+                    //row base ID
+                    var rowBaseID = '#author-'+id+'-';
+
+                    //get all the data from row
+                    $(rowBaseID+'first_name').html(updatedItem.first_name);
+                    $(rowBaseID+'middle_name').html(updatedItem.middle_name);
+                    $(rowBaseID+'last_name').html(updatedItem.last_name);
+                    $(rowBaseID+'description').html(updatedItem.description);
+                    $(rowBaseID+'birth_date').html(updatedItem.birth_date);
+
+                    form.find('.modal-form-submit-button').removeAttr('disabled');
+                    form.find('.modal-cancel-button').removeAttr('disabled');
+                    saveLabel.removeClass('fa fa-spin fa-spinner');
+                    saveLabel.html('Save Changes');
+
+                    //close the modal and open the success modal
+                    $(form.data('parentmodal')).modal('hide');
+
+                    console.log(form.data('success'));
+                    successModalMessage.html(form.data('success'));
+                    successModal.modal('show');
+
+                    break;
+
+                default :
+                    table.ajax.reload(function(){
+
+                        form.find('.modal-form-submit-button').removeAttr('disabled');
+                        form.find('.modal-cancel-button').removeAttr('disabled');
+                        saveLabel.removeClass('fa fa-spin fa-spinner');
+                        saveLabel.html('Save');
+
+                        //close the modal and open the success modal
+                        $(form.data('parentmodal')).modal('hide');
+
+                        console.log(form.data('success'));
+                        successModalMessage.html(form.data('success'));
+                        successModal.modal('show');
+
+                    },false);
+            }
         }
     });
 
