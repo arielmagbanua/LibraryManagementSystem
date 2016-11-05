@@ -168,8 +168,8 @@ class Book extends Model
 
             //for author_id
             $query->orWhere('authors.first_name','LIKE',"%$param%")
-                ->orWhere('authors.middle_name','LIKE',"%$param%")
-                ->orWhere('authors.last_name','LIKE',"%$param%");
+                  ->orWhere('authors.middle_name','LIKE',"%$param%")
+                  ->orWhere('authors.last_name','LIKE',"%$param%");
         }
 
         $query->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);

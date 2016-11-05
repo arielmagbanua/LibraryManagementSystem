@@ -79,7 +79,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        User::destroy($id);
+
+        return response()->json(['message' => 'User successfuly deleted!','status' => 'success'],200);
     }
 
     /**
@@ -102,7 +104,7 @@ class UserController extends Controller
         foreach($membersWithLimit as $member)
         {
             $editButton = '<button class="edit-member btn-actions btn btn-primary" data-action="edit_member" data-toggle="modal" data-target="#member_modal_form" title="Edit" data-id="'.$member->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
-            $deleteButton = '<button class="delete-member btn-actions btn btn-danger" title="Delete" data-id="'.$member->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
+            $deleteButton = '<button class="delete-member btn-actions btn btn-danger" data-action="delete_member" data-toggle="modal" data-target="#delete_modal" title="Delete" data-id="'.$member->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
             $data = [
                 'id' => '<span id="member-'.$member->id.'-id">'.$member->id.'</span>',

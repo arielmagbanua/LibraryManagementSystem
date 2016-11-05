@@ -71,6 +71,30 @@
         </div>
     </div>
 
+    <!-- Delete modal -->
+    <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Delete Member</h4>
+                </div>
+
+                <div class="modal-body">
+                    {!! Form::hidden('member_id_to_delete', '', ['id' => 'member_id_to_delete', 'class' => 'form-control']) !!}
+                    <p id="delete_modal_message">Are you sure you want to delete this member?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="delete_cancel_button" data-dismiss="modal">Cancel</button>
+                    <button type="button" id="delete_member_button" class="btn btn-danger"><span class="delete-label">Yes Delete</span></button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <h2>Members</h2>
     <hr>
     <table id="members_datatable" class="table">
@@ -93,6 +117,7 @@
 @endsection
 
 @section('footer-links')
+    <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
@@ -107,13 +132,14 @@
             });
 
             var baseURL = $('#baseURL').html();
+
             var membersListURL = baseURL+'/serverSide/membersList';
 
             $('#members_datatable').DataTable({
                 'processing': true,
                 'serverSide': true,
                 'dom':'<"row" <"col-md-6" <"row" <"col-md-4" l><"col-md-8 add_member" >>><"col-md-6" f>>rt<"row" <"col-md-6" i><"col-md-6" p>>',
-                'order': [[ 0, "desc" ]],
+                'order': [[ 0, "asc" ]],
                 'ajax': {
                     url: membersListURL,
                     type: 'get',
@@ -157,6 +183,72 @@
 
                     $('#member_form').trigger("reset");
                 }
+
+            });
+
+            $('#delete_modal').on('show.bs.modal', function (e) {
+
+                var invoker = $(e.relatedTarget);
+                var invokerAction = invoker.data('action');
+
+                if(invokerAction=='delete_member')
+                {
+                    var memberID = invoker.data('id');
+                    console.log(memberID);
+                    //load the id to the hidden field of the modal for deletion
+                    $('#member_id_to_delete').val(memberID);
+
+                    //set the yes button to defaults
+                    var deleteButton = $('#delete_member_button');
+                    var deleteLabel = deleteButton.find('span.delete-label');
+                    deleteLabel.html('Yes Delete');
+                    deleteLabel.removeClass('fa fa-spin fa-spinner');
+                    deleteButton.removeAttr('disabled');
+                    deleteButton.show();
+                    $('#delete_cancel_button').html('Cancel');
+
+                    //set the body message to default
+                    $('#delete_modal_message').html('Are you sure you want to delete this member?');
+                }
+
+            });
+
+            $('#delete_member_button').click(function()
+            {
+                //get the member id
+                var memberID = $('#member_id_to_delete').val();
+                console.log(memberID);
+
+                var deleteButton = $(this);
+                var deleteCancelButton = $('#delete_cancel_button');
+
+                //modify the delete label to show spinner load
+                var deleteLabel = deleteButton.find('span.delete-label');
+                deleteLabel.html('');
+                deleteLabel.addClass('fa fa-spin fa-spinner');
+                deleteButton.prop('disabled',true);
+                deleteCancelButton.prop('disabled',true);
+
+                var deleteURL = baseURL + '/user/'+memberID;
+                console.log(deleteURL);
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: deleteURL,
+                    success: function()
+                    {
+                        //remove the record in datatable
+                        var table = $('#members_datatable').DataTable();
+                        var memberRow = $('#member-'+memberID+'-first_name').parents('tr');
+                        table.row(memberRow).remove().draw();
+
+                        //Change the message of modal and hide the delete button
+                        $('#delete_modal_message').html('The member was successfully deleted!');
+                        deleteButton.hide();
+                        deleteCancelButton.html('Close');
+                        deleteCancelButton.removeAttr('disabled');
+                    }
+                });
 
             });
 
