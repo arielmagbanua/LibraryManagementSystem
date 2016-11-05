@@ -19,7 +19,22 @@
     <div class="modal fade" id="book_modal_form" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                {!! Form::open(['url' => url('book/create'), 'id' => 'book_form']) !!}
+
+                <?php
+                    $formAttributes = array(
+                            'url' 					=> url('book'),
+                            'class'					=> 'modal_form',
+                            'data-confirmation' 	=> '',
+                            'data-process' 			=> 'add_book',
+                            'data-parentmodal'      => '#book_modal_form',
+                            'data-datatable'        => '#books_datatable',
+                            'data-success'          => 'Book added successfully!',
+                            'id'                    => 'book_form'
+
+                    );
+                ?>
+
+                {!! Form::open($formAttributes) !!}
 
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -50,7 +65,7 @@
 
                     <div class="form-group">
                         {!! Form::label('overdue_fine', 'Overdue Fine') !!}
-                        {!! Form::number('overdue_fine', '', ['class' => 'form-control']) !!}
+                        {!! Form::text('overdue_fine', '', ['class' => 'form-control']) !!}
                     </div>
 
                     <div class="form-group">
@@ -58,11 +73,15 @@
                         {!! Form::text('shelf_location', '', ['class' => 'form-control']) !!}
                     </div>
 
+                    <!-- Error Container -->
+                    <div class="form-group modal_error_wrapper">
+                        <div class="alert alert-danger this_errors"></div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" id="modal_form_submit" class="btn btn-primary modal_submit">Save changes</button>
+                    <button type="button" class="btn btn-default modal-cancel-button" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary modal-form-submit-button"><span class="save-label">Save changes</span></button>
                 </div>
 
                 {!! Form::close() !!}
@@ -72,6 +91,9 @@
 
     <!-- Delete modal -->
     @include('common.delete_modal')
+
+    <!-- Success modal -->
+    @include('common.success_modal')
 
     <h2>Books</h2>
     <hr>
@@ -97,6 +119,7 @@
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('bower_components/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('js/form-process.js') }}"></script>
     <script>
         $(document).ready(function(){
 
@@ -136,6 +159,8 @@
                 var invoker = $(e.relatedTarget);
                 var invokerAction = invoker.data('action');
 
+                var bookForm = $('#book_form');
+
                 if(invokerAction=='edit_book')
                 {
                     var bookID = invoker.data('id');
@@ -144,16 +169,20 @@
                     //change the title of the modal
                     $('.modal-title').html('Edit Book');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save Changes');
+                    $('.save-label').html('Save Changes');
+
+                    bookForm.attr('action', baseURL+'/book/'+bookID);
+                    bookForm.attr('method', 'PATCH');
                 }
                 else
                 {
                     //change the title of the modal
                     $('.modal-title').html('Add Book');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save');
+                    $('.save-label').html('Save');
 
-                    $('#book_form').trigger("reset");
+                    bookForm.attr('action', baseURL+'/book');
+                    bookForm.attr('method', 'POST');
                 }
 
             });

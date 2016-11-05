@@ -29,12 +29,36 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $inputs = $request->all();
+
+        $user = new User;
+
+        $user->first_name = $inputs['first_name'];
+        $user->middle_name = $inputs['middle_name'];
+        $user->last_name = $inputs['last_name'];
+        $user->address = $inputs['address'];
+        $user->email = $inputs['email'];
+        $user->birth_date = $inputs['birth_date'];
+
+        if(isset($inputs['account_type']))
+        {
+            $user->account_type = $inputs['account_type'];
+        }
+
+        $user->password = bcrypt($inputs['password']);
+        $user->save();
+
+        $responseData = [
+            'id' => $user->id,
+            'status' => 'success'
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**

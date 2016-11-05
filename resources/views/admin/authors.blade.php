@@ -19,7 +19,21 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
 
-                {!! Form::open(['url' => url('author/create'), 'id' => 'author_form']) !!}
+                <?php
+                    $formAttributes = array(
+                            'url' 					=> url('author'),
+                            'class'					=> 'modal_form',
+                            'data-confirmation' 	=> '',
+                            'data-process' 			=> 'add_author',
+                            'data-parentmodal'      => '#author_modal_form',
+                            'data-datatable'        => '#authors_datatable',
+                            'data-success'          => 'Author added successfully!',
+                            'id'                    => 'author_form'
+
+                    );
+                ?>
+
+                {!! Form::open($formAttributes) !!}
 
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -53,11 +67,15 @@
                         {!! Form::text('birth_date', '', ['class' => 'form-control']) !!}
                     </div>
 
+                    <!-- Error Container -->
+                    <div class="form-group modal_error_wrapper">
+                        <div class="alert alert-danger this_errors"></div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" id="modal_form_submit" class="btn btn-primary modal_submit">Save changes</button>
+                    <button type="button" class="btn btn-default modal-cancel-button" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary modal-form-submit-button"><span class="save-label">Save changes</span></button>
                 </div>
 
                 {!! Form::close() !!}
@@ -69,20 +87,23 @@
     <!-- Delete modal -->
     @include('common.delete_modal')
 
+    <!-- Success modal -->
+    @include('common.success_modal')
+
     <h2>Authors</h2>
     <hr>
 
     <table id="authors_datatable" class="table table-hover">
         <thead>
-        <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Middle Name</th>
-            <th>Last Name</th>
-            <th>Description</th>
-            <th>Date of Birth</th>
-            <th>Actions</th>
-        </tr>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>Description</th>
+                <th>Date of Birth</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody></tbody>
     </table>
@@ -93,6 +114,7 @@
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('js/form-process.js') }}"></script>
     <script>
         $(document).ready(function()
         {
@@ -134,6 +156,8 @@
                 var invoker = $(e.relatedTarget);
                 var invokerAction = invoker.data('action');
 
+                var authorForm = $('#author_form');
+
                 if(invokerAction=='edit_author')
                 {
                     var authorID = invoker.data('id');
@@ -142,16 +166,20 @@
                     //change the title of the modal
                     $('.modal-title').html('Edit Author');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save Changes');
+                    $('.save-label').html('Save Changes');
+
+                    authorForm.attr('action', baseURL+'/author/'+authorID);
+                    authorForm.attr('method', 'PATCH');
                 }
                 else
                 {
                     //change the title of the modal
                     $('.modal-title').html('Add Author');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save');
+                    $('.save-label').html('Save');
 
-                    $('#author_form').trigger("reset");
+                    authorForm.attr('action', baseURL+'/author');
+                    authorForm.attr('method', 'POST');
                 }
 
             });

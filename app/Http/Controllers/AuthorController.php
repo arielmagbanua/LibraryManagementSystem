@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Author;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -38,7 +37,14 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $author = Author::create($request->all());
+
+        $responseData = [
+            'id' => $author->id,
+            'status' => 'success'
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**

@@ -33,12 +33,19 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $book = Book::create($request->all());
+
+        $responseData = [
+            'id' => $book->id,
+            'status' => 'success'
+        ];
+
+        return response()->json($responseData,200);
     }
 
     /**

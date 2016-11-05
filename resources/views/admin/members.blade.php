@@ -19,7 +19,21 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
 
-                {!! Form::open(['url' => url('member/create'), 'id' => 'member_form']) !!}
+                <?php
+                    $formAttributes = array(
+                            'url' 					=> url('user'),
+                            'class'					=> 'modal_form',
+                            'data-confirmation' 	=> '',
+                            'data-process' 			=> 'add_member',
+                            'data-parentmodal'      => '#member_modal_form',
+                            'data-datatable'        => '#members_datatable',
+                            'data-success'          => 'Member added successfully!',
+                            'id'                    => 'member_form'
+
+                    );
+                ?>
+
+                {!! Form::open($formAttributes) !!}
 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -58,11 +72,25 @@
                             {!! Form::text('birth_date', '', ['class' => 'form-control']) !!}
                         </div>
 
+                        <div class="form-group">
+                            {!! Form::label('password', 'Password') !!}
+                            {!! Form::password('password', ['class' => 'form-control password-field']) !!}
+                        </div>
+
+                        <div class="form-group">
+                            {!! Form::label('confirm_password', 'Confirm Password') !!}
+                            {!! Form::password('confirm_password', ['class' => 'form-control password-field']) !!}
+                        </div>
+
+                        <!-- Error Container -->
+                        <div class="form-group modal_error_wrapper">
+                            <div class="alert alert-danger this_errors"></div>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" id="modal_form_submit" class="btn btn-primary modal_submit">Save changes</button>
+                        <button type="button" class="btn btn-default modal-cancel-button" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary modal-form-submit-button"><span class="save-label">Save changes</span></button>
                     </div>
 
                 {!! Form::close() !!}
@@ -73,6 +101,9 @@
 
     <!-- Delete modal -->
     @include('common.delete_modal')
+
+    <!-- Success modal -->
+    @include('common.success_modal')
 
     <h2>Members</h2>
     <hr>
@@ -99,6 +130,7 @@
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('js/form-process.js') }}"></script>
     <script>
         $(document).ready(function()
         {
@@ -142,6 +174,8 @@
                 var invoker = $(e.relatedTarget);
                 var invokerAction = invoker.data('action');
 
+                var memberForm = $('#member_form');
+
                 if(invokerAction=='edit_member')
                 {
                     var memberID = invoker.data('id');
@@ -150,16 +184,20 @@
                     //change the title of the modal
                     $('.modal-title').html('Edit Member');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save Changes');
+                    $('.save-label').html('Save Changes');
+
+                    memberForm.attr('action', baseURL+'/user/'+memberID);
+                    memberForm.attr('method', 'PATCH');
                 }
                 else
                 {
                     //change the title of the modal
                     $('.modal-title').html('Add Member');
                     //change the text of submit button
-                    $('#modal_form_submit').html('Save');
+                    $('.save-label').html('Save');
 
-                    $('#member_form').trigger("reset");
+                    memberForm.attr('action', baseURL+'/user');
+                    memberForm.attr('method', 'POST');
                 }
 
             });
