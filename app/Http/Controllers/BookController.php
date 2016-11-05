@@ -167,4 +167,54 @@ class BookController extends Controller
 
         return $responseData;
     }
+
+    /**
+     * Server side processing url for books list datatable that can be borrowed.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function borrowBooksList(Request $request)
+    {
+        $inputs = $request->all();
+        $param = $inputs['search']['value'];
+
+        $allBooksCount = Book::all()->count();
+        $totalFiltered = $allBooksCount;
+
+        $booksData = [];
+
+        $booksWithLimit = Book::searchBooksWithLimit($inputs)->get();
+
+        foreach($booksWithLimit as $book)
+        {
+            $borrowButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#borrow_book_modal" title="Borrow" data-id="'.$book->id.'" data-action="borrow_book">Borrow</button>';
+
+            $data = [
+                'title' => '<span id="book-'.$book->id.'-title">'.$book->title.'</span>',
+                'author' => '<span id="book-'.$book->id.'-author" data-author="'.$book->author_id.'">'.$book->author_name.'</span>',
+                'isbn' => '<span id="book-'.$book->id.'-isbn">'.$book->isbn.'</span>',
+                'quantity' => '<span id="book-'.$book->id.'-quantity">'.$book->quantity.'</span>',
+                'overdue_fine' => '<span id="book-'.$book->id.'-overdue_fine">'.$book->overdue_fine.'</span>',
+                'shelf_location' => '<span id="book-'.$book->id.'-shelf_location">'.$book->shelf_location.'</span>',
+                'actions' => $borrowButton
+            ];
+
+            array_push($booksData,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = Book::searchBooksWithoutLimit($inputs)->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allBooksCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $booksData   // total data array
+        );
+
+        return $responseData;
+    }
 }

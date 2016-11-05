@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Book;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -94,5 +96,43 @@ class MemberController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function borrow(Request $request, $bookID)
+    {
+        //get the current user who will borrow.
+        $user = $request->user();
+        $borrowedBooks = $user->borrowedBooks();
+
+        //check if user has already reach it borrow limit
+        $userAge = Carbon::parse($user->birth_date)->diffInYears(Carbon::now(),true);
+        $userBorrowCount = $borrowedBooks->where('status','<>',0)->count();
+
+        $responseData = [
+            'process' => 'borrow_book',
+            'status' => 'success',
+            'message' => ''
+        ];
+
+        if($userAge>12 && $userBorrowCount>=6)
+        {
+            $responseData['status'] = 'fail';
+            $responseData['message'] = 'You are only allowed to borrow maximum of 6 books. Please return all borrowed books or cancel some borrow requests. :(';
+        }
+        else if($userAge<=12 && $userBorrowCount>=3)
+        {
+            $responseData['status'] = 'fail';
+            $responseData['message'] = 'You are only allowed to borrow maximum of 3 books. Please return all borrowed books or cancel some borrow requests. :(';
+        }
+        else
+        {
+            $book = Book::find($bookID);
+            $borrowedBooks->save($book);
+
+            $responseData['status'] = 'fail';
+            $responseData['message'] = 'Borrow request sent. It would be approved by a librarian soon!';
+        }
+
+        return response()->json($responseData,200);
     }
 }

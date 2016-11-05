@@ -33,6 +33,8 @@ Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], functio
     Route::get('/','MemberController@index');
     Route::get('/home','MemberController@index');
     Route::get('/books','MemberController@books');
+    Route::get('/book/{bookID}/borrow','MemberController@borrow');
+    Route::get('/book/{id}/return','MemberController@return');
 });
 
 /**
@@ -43,6 +45,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('membersList','UserController@membersList');
     Route::get('booksList','BookController@booksList');
     Route::get('authorsList','AuthorController@authorsList');
+    Route::get('borrowBooksList','BookController@borrowBooksList');
 });
 
 /**
