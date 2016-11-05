@@ -66,10 +66,13 @@
         </div>
     </div>
 
+    <!-- Delete modal -->
+    @include('common.delete_modal')
+
     <h2>Authors</h2>
     <hr>
 
-    <table id="authors_datatable" class="table">
+    <table id="authors_datatable" class="table table-hover">
         <thead>
         <tr>
             <th>ID</th>
@@ -107,7 +110,7 @@
                 'processing': true,
                 'serverSide': true,
                 'dom':'<"row" <"col-md-6" <"row" <"col-md-4" l><"col-md-8 add_author" >>><"col-md-6" f>>rt<"row" <"col-md-6" i><"col-md-6" p>>',
-                'order': [[ 0, "desc" ]],
+                'order': [[ 0, "asc" ]],
                 'ajax': {
                     url: authorsListURL,
                     type: 'get',
@@ -152,6 +155,73 @@
                 }
 
             });
+
+            $('#delete_modal').on('show.bs.modal', function (e) {
+
+                var invoker = $(e.relatedTarget);
+                var invokerAction = invoker.data('action');
+
+                if(invokerAction=='delete_author')
+                {
+                    var authorID = invoker.data('id');
+                    console.log(authorID);
+                    //load the id to the hidden field of the modal for deletion
+                    $('#id_to_delete').val(authorID);
+
+                    //set the yes button to defaults
+                    var deleteButton = $('#delete_button');
+                    var deleteLabel = deleteButton.find('span.delete-label');
+                    deleteLabel.html('Yes Delete');
+                    deleteLabel.removeClass('fa fa-spin fa-spinner');
+                    deleteButton.removeAttr('disabled');
+                    deleteButton.show();
+                    $('#delete_cancel_button').html('Cancel');
+
+                    //set the body message to default
+                    $('#delete_modal_message').html('Are you sure you want to delete this author?');
+                }
+
+            });
+
+            $('#delete_button').click(function()
+            {
+                //get the member id
+                var authorID = $('#id_to_delete').val();
+                console.log(authorID);
+
+                var deleteButton = $(this);
+                var deleteCancelButton = $('#delete_cancel_button');
+
+                //modify the delete label to show spinner load
+                var deleteLabel = deleteButton.find('span.delete-label');
+                deleteLabel.html('');
+                deleteLabel.addClass('fa fa-spin fa-spinner');
+                deleteButton.prop('disabled',true);
+                deleteCancelButton.prop('disabled',true);
+
+                var deleteURL = baseURL + '/author/'+authorID;
+                console.log(deleteURL);
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: deleteURL,
+                    success: function()
+                    {
+                        //remove the record in datatable
+                        var table = $('#authors_datatable').DataTable();
+                        var row = $('#author-'+authorID+'-first_name').parents('tr');
+                        table.row(row).remove().draw();
+
+                        //Change the message of modal and hide the delete button
+                        $('#delete_modal_message').html('The book was successfully deleted!');
+                        deleteButton.hide();
+                        deleteCancelButton.html('Close');
+                        deleteCancelButton.removeAttr('disabled');
+                    }
+                });
+
+            });
+
         });
     </script>
 @endsection

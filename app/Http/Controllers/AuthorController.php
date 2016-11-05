@@ -83,7 +83,9 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Author::destroy($id);
+
+        return response()->json(['message' => 'Author successfully deleted!','status' => 'success'],200);
     }
 
     /**
@@ -107,7 +109,7 @@ class AuthorController extends Controller
         foreach($authorsWithLimit as $author)
         {
             $editButton = '<button class="edit-author btn-actions btn btn-primary" data-action="edit_author" data-toggle="modal" data-target="#author_modal_form" title="Edit" data-id="'.$author->id.'"><span class="glyphicon glyphicon-pencil"></span></button>';
-            $deleteButton = '<button class="delete-author btn-actions btn btn-danger" title="Delete" data-id="'.$author->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
+            $deleteButton = '<button class="delete-author btn-actions btn btn-danger" data-action="delete_author" data-toggle="modal" data-target="#delete_modal" title="Delete" data-id="'.$author->id.'"><span class="glyphicon glyphicon-trash"></span></button>';
 
             $data = [
                 'id' => '<span id="author-'.$author->id.'-id">'.$author->id.'</span>',
