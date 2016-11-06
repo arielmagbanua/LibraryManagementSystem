@@ -35,8 +35,10 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
 
 Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()
 {
-    Route::get('/','MemberController@index');
-    Route::get('/home','MemberController@index');
+    //Route::get('/','MemberController@index');
+    //Route::get('/home','MemberController@index');
+    Route::get('/','MemberController@books');
+    Route::get('/home','MemberController@books');
     Route::get('/books','MemberController@books');
     Route::get('/borrowed_books','MemberController@borrowedBooks');
     Route::get('/borrow_request','MemberController@pendingBorrowRequest');
@@ -58,6 +60,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('borrowBooksList','BookController@borrowBooksList');
     Route::get('pendingBorrowRequest','BookController@pendingBorrowRequest');
     Route::get('pendingBorrowRequestForAdmin','BookController@pendingBorrowRequestForAdmin');
+    Route::get('borrowedBooksList','BookController@borrowedBooksList');
 });
 
 /**
@@ -82,3 +85,14 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
+
+Route::get('test',function(){
+    $borrowedBooks = DB::table('borrowed_books')
+        ->select('borrowed_books.id','books.title','books.isbn', DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'),'borrowed_books.fine')
+        ->join('books','books.id','=','borrowed_books.book_id')
+        ->join('authors','authors.id','=','books.author_id')
+        ->where('borrowed_books.status','=',1)
+        ->where('borrowed_books.user_id','=',1)->get();
+
+    return $borrowedBooks;
+});

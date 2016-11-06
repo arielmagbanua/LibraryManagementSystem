@@ -63,7 +63,7 @@
                     @endif
 
                     @if(auth()->check() && auth()->user()->account_type == 2)
-                        <li class="@yield('member-home-class')"><a href="{{ url('member/home') }}">Home @yield('member-home-current')</a></li>
+                        <!--<li class="@yield('member-home-class')"><a href="{{ url('member/home') }}">Home @yield('member-home-current')</a></li>-->
                         <li class="@yield('member-books-class')"><a href="{{ url('member/books') }}">Books @yield('member-books-current')</a></li>
                         <li class="@yield('member-borrowed-class')"><a href="{{ url('member/borrowed_books') }}">Borrowed Books @yield('member-borrowed-current')</a></li>
                         <li class="@yield('member-pending-borrow-class')"><a href="{{ url('member/borrow_request') }}">Pending  Books @yield('member-pending-borrow-current')</a></li>
@@ -72,7 +72,12 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
+
+                    <li class="free-slot-1"><a class="free-slot-link-1" href="#"></a></li>
+                    <li class="free-slot-2"><a class="free-slot-link-2" href="#"></a></li>
+
                     @if(auth()->check())
+                        <li><a href="#">Current Date: {{ Carbon\Carbon::now()->toDateString() }}</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ auth()->user()->first_name }} <span class="caret"></span></a>
                             <ul class="dropdown-menu">

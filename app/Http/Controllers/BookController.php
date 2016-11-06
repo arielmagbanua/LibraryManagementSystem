@@ -349,7 +349,7 @@ class BookController extends Controller
 
         if(!empty($param) || $param!='')
         {
-            $allPendingBookRequestsCount->where(function($query) use ($param){
+            $pendingBorrowRequests->where(function($query) use ($param){
                 $query->where('books.title','LIKE',"%$param%")
                       ->orWhere('books.isbn','LIKE',"%$param%")
                       ->orWhere('user_name','LIKE',"%$param%")
@@ -407,5 +407,119 @@ class BookController extends Controller
         );
 
         return $responseData;
+    }
+
+    /**
+     * Server side processing url for books list datatable that are pending borrow request for admin accounts.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function borrowedBooksList(Request $request)
+    {
+        $inputs = $request->all();
+        $userID = $request->user()->id;
+
+        $param = $inputs['search']['value'];
+        $start = $inputs['start'];
+        $length = $inputs['length'];
+
+        $columns = [
+            //datatable column index  => database column name
+            0 => 'books.title',
+            1 => 'author_name',
+            2 => 'books.isbn',
+            3 => 'borrow_start_date',
+            4 => 'borrowed_books.fine'
+        ];
+
+        $borrowedBooksData = [];
+
+        $borrowedBooks = DB::table('borrowed_books')
+                            ->select('borrowed_books.id','books.title','books.isbn', DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'),'borrowed_books.fine')
+                            ->join('books','books.id','=','borrowed_books.book_id')
+                            ->join('authors','authors.id','=','books.author_id')
+                            ->where('borrowed_books.status','=',1)
+                            ->where('borrowed_books.user_id','=',$userID);
+
+        $allBorrowedBooksCount = $borrowedBooks->count();
+        $totalFiltered = $allBorrowedBooksCount;
+
+        if(!empty($param) || $param!='')
+        {
+            $borrowedBooks->where(function($query) use ($param){
+
+                $query->where('books.title','LIKE',"%$param%")
+                    ->orWhere('books.isbn','LIKE',"%$param%")
+                    ->orWhere('author_name','LIKE',"%$param%");
+
+                if(is_double($param))
+                {
+                    $paramDouble = doubleval($param);
+                    $query->orWhere('borrowed_books.fine','=',$paramDouble);
+                }
+
+                //for birth_date
+                if($this->validateDate($param))
+                {
+                    $query->orWhere('DATE(borrow_start_date)','=',"DATE($param)");
+                }
+            });
+        }
+
+        $borrowedBooks->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $borrowedBooksWithLimit = $borrowedBooks;
+
+        if($length>1)
+        {
+            $borrowedBooksWithLimit->take($length)->skip($start);
+        }
+
+        $borrowedBooksWithLimit = $borrowedBooksWithLimit->get();
+
+        foreach($borrowedBooksWithLimit as $book)
+        {
+
+            $requestID = $book->id;
+            //$approveButton = '<button class="borrow-book btn-actions btn btn-success glyphicon glyphicon-thumbs-up" data-toggle="modal" data-target="#request_modal" title="Approve borrow request" data-id="'.$requestID.'" data-action="approve_borrow_request"></button>';
+            //$rejectButton = '<button class="borrow-book btn-actions btn btn-danger glyphicon glyphicon-thumbs-down" data-toggle="modal" data-target="#request_modal" title="Reject borrow bequest" data-id="'.$requestID.'" data-action="reject_borrow_request"></button>';
+
+            $data = [
+                'title' => '<span id="book-'.$requestID.'-title">'.$book->title.'</span>',
+                'author_name' => '<span id="book-'.$requestID.'-author_name">'.$book->author_name.'</span>',
+                'isbn' => '<span id="book-'.$requestID.'-isbn">'.$book->isbn.'</span>',
+                'borrow_start_date' => '<span id="book-'.$requestID.'-borrow_start_date">'.$book->borrow_start_date.'</span>',
+                //'fine' => '<span id="book-'.$requestID.'-fine" style="color:'.$fineTexColor.';">'.$book->fine.'</span>'
+                'fine' => $book->fine
+            ];
+
+            array_push($borrowedBooksData,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = $borrowedBooks->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allBorrowedBooksCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $borrowedBooksData   // total data array
+        );
+
+        return $responseData;
+    }
+
+    /**
+     * Date validation
+     *
+     * @param $date
+     * @return bool
+     */
+    protected function validateDate($date)
+    {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') == $date;
     }
 }
