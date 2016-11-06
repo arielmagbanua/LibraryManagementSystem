@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Book;
 use App\BorrowedBook;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
@@ -239,7 +240,8 @@ class BookController extends Controller
             0 => 'title',
             1 => 'isbn',
             2 => 'overdue_fine',
-            3 => 'shelf_location'
+            3 => 'shelf_location',
+            4 => 'pivot_borrow_start_date'
         ];
 
         $booksData = [];
@@ -267,7 +269,7 @@ class BookController extends Controller
             });
         }
 
-        $refinedPendingRequests = $pendingRequests->withPivot('id')->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $refinedPendingRequests = $pendingRequests->withPivot('id','borrow_start_date')->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
         $booksWithLimit = $refinedPendingRequests;
 
         if($length>1)
@@ -290,6 +292,7 @@ class BookController extends Controller
                 'isbn' => '<span id="book-'.$requestID.'-isbn">'.$book->isbn.'</span>',
                 'overdue_fine' => '<span id="book-'.$requestID.'-overdue_fine">'.$book->overdue_fine.'</span>',
                 'shelf_location' => '<span id="book-'.$requestID.'-shelf_location">'.$book->shelf_location.'</span>',
+                'borrow_start_date' => '<span id="book-'.$requestID.'-borrow_start_date">'.Carbon::parse($book->pivot->borrow_start_date)->toDateString().'</span>',
                 'actions' => $cancelButton
             ];
 

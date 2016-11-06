@@ -125,7 +125,7 @@ class MemberController extends Controller
      * @param $bookID
      * @return \Illuminate\Http\JsonResponse
      */
-    public function borrow(Request $request, $bookID)
+    public function borrow(Request $request, $bookID, $startDate)
     {
         //get the current user who will borrow.
         $user = $request->user();
@@ -133,7 +133,7 @@ class MemberController extends Controller
 
         //check if user has already reach it borrow limit
         $userAge = Carbon::parse($user->birth_date)->diffInYears(Carbon::now(),true);
-        $userBorrowCount = $borrowedBooks->where('status','<>',0)->count();
+        $userBorrowCount = $borrowedBooks->where('status',1)->orWhere('status',2)->count();
 
         $responseData = [
             'process' => 'borrow_book',
@@ -153,8 +153,9 @@ class MemberController extends Controller
         }
         else
         {
-            $book = Book::find($bookID);
-            $borrowedBooks->save($book);
+            //$book = Book::find($bookID);
+            //$borrowedBooks->save($book);
+            $borrowedBooks->attach($bookID,['borrow_start_date' => $startDate]);
 
             $responseData['status'] = 'success';
             $responseData['message'] = 'Borrow request sent. It would be approved by a librarian soon!';

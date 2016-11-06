@@ -42,7 +42,7 @@ Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], functio
     Route::get('/borrow_request','MemberController@pendingBorrowRequest');
 
     //user actions for a book
-    Route::post('/book/{bookID}/borrow','MemberController@borrow');
+    Route::post('/book/{bookID}/borrow/{startDate}','MemberController@borrow');
     Route::post('/book/{id}/return','MemberController@return');
     Route::post('/book/{requestID}/cancel_borrow_request','MemberController@cancelBorrowRequest');
 });
@@ -82,15 +82,3 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
-
-Route::get('test',function(){
-
-    $pendingBorrowRequests = DB::table('borrowed_books')
-                                 ->select('books.title','books.isbn','books.overdue_fine','users.first_name','users.middle_name','users.last_name','users.email')
-                                 ->join('users','users.id','=','borrowed_books.user_id')
-                                 ->join('books','books.id','=','borrowed_books.book_id');
-
-
-
-    return $pendingBorrowRequests->count();
-});

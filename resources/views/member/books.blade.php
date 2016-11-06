@@ -2,6 +2,7 @@
 
 @section('header-links')
     <link rel="stylesheet" href="{{ asset('bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
 @endsection
 
 @section('member-books-class')
@@ -24,8 +25,17 @@
                 </div>
 
                 <div class="modal-body">
-                    {!! Form::hidden('book_id_to_borrow', '', ['id' => 'book_id_to_borrow', 'class' => 'form-control']) !!}
-                    <p id="borrow_modal_message">Borrow a copy of this book?</p>
+
+                    <div class="form-group">
+                        {!! Form::hidden('book_id_to_borrow', '', ['id' => 'book_id_to_borrow', 'class' => 'form-control']) !!}
+                        <p id="borrow_modal_message">Borrow a copy of this book?</p>
+                    </div>
+
+                    <div class="form-group">
+                        {!! Form::label('borrow_start_date', 'Borrow Start Date') !!}
+                        {!! Form::text('borrow_start_date', '', ['class' => 'form-control date-field','required' => 'true']) !!}
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
@@ -60,6 +70,7 @@
 @section('footer-links')
     <script src="{{ asset('bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
     <script>
         $(document).ready(function()
         {
@@ -67,6 +78,18 @@
                 headers: {
                     'X-CSRF-Token': $('meta[name="_token"]').attr('content')
                 }
+            });
+
+
+            var date = new Date();
+            date.setDate(date.getDate()-1);
+
+            $('#borrow_start_date').datepicker({
+                format: "yyyy-mm-dd",
+                clearBtn: true,
+                autoclose: true,
+                todayHighlight: true,
+                startDate: date
             });
 
             var baseURL = $('#baseURL').html();
@@ -94,30 +117,34 @@
 
             $('#borrow_book_modal').on('show.bs.modal', function (e) {
 
-                $('.modal-title').html('Borrow');
-
-                var invoker = $(e.relatedTarget);
-                var invokerAction = invoker.data('action');
-
-                if(invokerAction=='borrow_book')
+                if(e.namespace === 'bs.modal')
                 {
-                    var bookID = invoker.data('id');
-                    console.log(bookID);
-                    //load the id to the hidden field of the modal for deletion
-                    $('#book_id_to_borrow').val(bookID);
+                    $('.modal-title').html('Borrow');
+                    $('#borrow_start_date').val('');
 
-                    //set the yes button to defaults
-                    var borrowButton = $('#borrow_button');
-                    var borrowLabel = borrowButton.find('span.borrow-label');
-                    borrowLabel.html('Yes');
-                    borrowLabel.removeClass('fa fa-spin fa-spinner');
-                    borrowButton.removeAttr('disabled');
-                    borrowButton.show();
+                    var invoker = $(e.relatedTarget);
+                    var invokerAction = invoker.data('action');
 
-                    $('#borrow_cancel_button').html('Cancel');
+                    if(invokerAction=='borrow_book')
+                    {
+                        var bookID = invoker.data('id');
+                        console.log(bookID);
+                        //load the id to the hidden field of the modal for deletion
+                        $('#book_id_to_borrow').val(bookID);
 
-                    //set the body message to default
-                    $('#borrow_modal_message').html('Borrow a copy of this book?');
+                        //set the yes button to defaults
+                        var borrowButton = $('#borrow_button');
+                        var borrowLabel = borrowButton.find('span.borrow-label');
+                        borrowLabel.html('Yes');
+                        borrowLabel.removeClass('fa fa-spin fa-spinner');
+                        borrowButton.removeAttr('disabled');
+                        borrowButton.show();
+
+                        $('#borrow_cancel_button').html('Cancel');
+
+                        //set the body message to default
+                        $('#borrow_modal_message').html('Borrow a copy of this book?');
+                    }
                 }
 
             });
@@ -127,6 +154,15 @@
                 //get the member id
                 var bookID = $('#book_id_to_borrow').val();
                 console.log(bookID);
+                var startDate = $('#borrow_start_date').val();
+                console.log(startDate);
+
+                //do not let the user proceed if there is not start date
+                if(startDate=='' || startDate==undefined)
+                {
+                    $('#borrow_modal_message').html('Please provide the borrow start date!');
+                    return;
+                }
 
                 var borrowButton = $(this);
                 var borrowCancelButton = $('#borrow_cancel_button');
@@ -138,7 +174,7 @@
                 borrowButton.prop('disabled',true);
                 borrowCancelButton.prop('disabled',true);
 
-                var borrowURL = baseURL + '/member/book/'+bookID+'/borrow';
+                var borrowURL = baseURL + '/member/book/'+bookID+'/borrow/'+startDate;
                 console.log(borrowURL);
 
                 $.ajax({

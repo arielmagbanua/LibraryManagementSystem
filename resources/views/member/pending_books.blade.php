@@ -49,6 +49,7 @@
                 <th>ISBN</th>
                 <th>Overdue Fine</th>
                 <th>Shelf Location</th>
+                <th>Borrow Start Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -87,6 +88,7 @@
                     {'data':'isbn'},
                     {'data':'overdue_fine'},
                     {'data':'shelf_location'},
+                    {'data':'borrow_start_date'},
                     {'data':'actions','orderable': false}
                 ]
             });
@@ -166,7 +168,7 @@
                             //Change the message of modal and hide the delete button
                             yesCancelButton.hide();
                             cancelButton.removeAttr('disabled');
-                            
+
                         },false);
 
                     }
