@@ -296,12 +296,14 @@
                         //table.row(row).remove().draw();
 
                         table.ajax.reload(function(){
+
                             //Change the message of modal and hide the delete button
                             $('#delete_modal_message').html('The member was successfully deleted!');
                             deleteButton.hide();
                             deleteCancelButton.html('Close');
                             deleteCancelButton.removeAttr('disabled');
-                        });
+
+                        },false);
                     }
                 });
 

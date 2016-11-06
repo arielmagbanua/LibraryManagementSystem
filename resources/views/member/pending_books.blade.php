@@ -166,7 +166,8 @@
                             //Change the message of modal and hide the delete button
                             yesCancelButton.hide();
                             cancelButton.removeAttr('disabled');
-                        });
+                            
+                        },false);
 
                     }
                 });
