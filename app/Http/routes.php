@@ -26,11 +26,13 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
     Route::get('/authors','AdminController@authors');
     Route::get('/books','AdminController@books');
     Route::get('/members','AdminController@members');
-    Route::get('/books/borrow_requests','AdminController@borrowRequests');
+    Route::get('/member_borrow_requests','AdminController@memberBorrowRequests');
+    Route::get('/member_borrowed_books','AdminController@memberBorrowedBooks');
 
     //admin actions for a book
     Route::post('/book/{requestID}/approve_borrow_request','AdminController@approveBorrowRequest');
     Route::post('/book/{requestID}/reject_borrow_request','AdminController@rejectBorrowRequest');
+    Route::post('/book/{requestID}/book_returned','AdminController@bookReturned');
 });
 
 Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()
@@ -61,6 +63,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('pendingBorrowRequest','BookController@pendingBorrowRequest');
     Route::get('pendingBorrowRequestForAdmin','BookController@pendingBorrowRequestForAdmin');
     Route::get('borrowedBooksList','BookController@borrowedBooksList');
+    Route::get('memberBorrowedBooksList','BookController@memberBorrowedBooksList');
 });
 
 /**

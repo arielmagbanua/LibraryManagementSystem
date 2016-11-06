@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Author;
 use App\BorrowedBook;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -59,13 +60,23 @@ class AdminController extends Controller
     }
 
     /**
-     * Page for borrow requests
+     * Page for member borrow requests
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function borrowRequests()
+    public function memberBorrowRequests()
     {
-        return view('admin.borrow_requests');
+        return view('admin.member_borrow_requests');
+    }
+
+    /**
+     * Page for member borrow books
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function memberBorrowedBooks()
+    {
+        return view('admin.member_borrowed_books');
     }
 
     public function approveBorrowRequest($requestID)
@@ -110,6 +121,49 @@ class AdminController extends Controller
                     $responseData['message'] = 'Book borrow request successfully rejected and was removed from the system.';
                 }
             }
+        }
+
+        return $responseData;
+    }
+
+    public function bookReturned($requestID)
+    {
+        $requestedBook = BorrowedBook::where('id',$requestID)->where('status',1)->first();
+        $result = $this->adminActionForBookReturned($requestedBook,'return_book');
+        return response()->json($result,200);
+    }
+
+    public function adminActionForBookReturned($requestedBook,$action)
+    {
+        $responseData = [
+            'process' => 'unknown_process',
+            'status' => 'fail',
+            'message' => 'Unknown process'
+        ];
+
+        if($requestedBook->exists())
+        {
+            $responseData['process'] = $action;
+
+            if($action=='return_book')
+            {
+                $requestedBook->status = 0;
+                $requestedBook->date_returned = Carbon::now()->toDateString();
+                $requestedBook->save();
+
+                $responseData['status'] = 'success';
+                $responseData['message'] = 'The book is successfully marked as returned!';
+            }
+            /*
+            else if('reject_borrow_request')
+            {
+                if($requestedBook->delete())
+                {
+                    $responseData['status'] = 'success';
+                    $responseData['message'] = 'Book borrow request successfully rejected and was removed from the system.';
+                }
+            }
+            */
         }
 
         return $responseData;
