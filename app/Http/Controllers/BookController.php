@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Book;
+use App\BorrowedBook;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use DB;
 
 class BookController extends Controller
 {
@@ -242,25 +244,30 @@ class BookController extends Controller
 
         $booksData = [];
 
-        $pendingRequests = User::find(1)->borrowedBooks()->where('status',2);
+        $userID = $request->user()->id;
+
+        $pendingRequests = User::find($userID)->borrowedBooks()->where('status',2);
         $allBooksCount = $pendingRequests->count();
         $totalFiltered = $allBooksCount;
 
+        if(!empty($param) || $param!='')
+        {
+            $pendingRequests = $pendingRequests->where(function($query) use ($param){
 
-        $refinedPendingRequests = $pendingRequests->where(function($query) use ($param){
+                $query->where('title','LIKE',"%$param%")
+                    ->orWhere('isbn','LIKE',"%$param%")
+                    ->orWhere('shelf_location','LIKE',"%$param%");
 
-                                $query->where('title','LIKE',"%$param%")
-                                      ->orWhere('isbn','LIKE',"%$param%")
-                                      ->orWhere('shelf_location','LIKE',"%$param%");
+                if(is_double($param))
+                {
+                    $paramDouble = doubleval($param);
+                    $query->orWhere('overdue_fine','=',$paramDouble);
+                }
 
-                                if(is_double($param))
-                                {
-                                    $paramDouble = doubleval($param);
-                                    $query->orWhere('overdue_fine','=',$paramDouble);
-                                }
-        });
+            });
+        }
 
-        $refinedPendingRequests = $refinedPendingRequests->withPivot('id')->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $refinedPendingRequests = $pendingRequests->withPivot('id')->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
         $booksWithLimit = $refinedPendingRequests;
 
         if($length>1)
@@ -299,6 +306,101 @@ class BookController extends Controller
             "recordsTotal"    => $allBooksCount,  // total number of records
             "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
             "data"            => $booksData   // total data array
+        );
+
+        return $responseData;
+    }
+
+    /**
+     * Server side processing url for books list datatable that are pending borrow request for admin accounts.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function pendingBorrowRequestForAdmin(Request $request)
+    {
+        $inputs = $request->all();
+        $param = $inputs['search']['value'];
+        $start = $inputs['start'];
+        $length = $inputs['length'];
+
+        $columns = [
+            //datatable column index  => database column name
+            0 => 'books.title',
+            1 => 'books.isbn',
+            2 => 'books.overdue_fine',
+            3 => 'user_name',
+            4 => 'users.email'
+        ];
+
+        $pendingBookBorrowRequests = [];
+
+        $pendingBorrowRequests = DB::table('borrowed_books')
+                                    ->select('borrowed_books.id','books.title','books.isbn','books.overdue_fine', DB::raw("CONCAT(users.first_name,' ',users.middle_name,' ',users.last_name) AS user_name"),'users.email')
+                                    ->join('users','users.id','=','borrowed_books.user_id')
+                                    ->join('books','books.id','=','borrowed_books.book_id')
+                                    ->where('borrowed_books.status',2);
+
+        $allPendingBookRequestsCount = $pendingBorrowRequests->count();
+        $totalFiltered = $allPendingBookRequestsCount;
+
+        if(!empty($param) || $param!='')
+        {
+            $allPendingBookRequestsCount->where(function($query) use ($param){
+                $query->where('books.title','LIKE',"%$param%")
+                      ->orWhere('books.isbn','LIKE',"%$param%")
+                      ->orWhere('user_name','LIKE',"%$param%")
+                      ->orWhere('users.email','LIKE',"%$param%");
+
+                if(is_double($param))
+                {
+                    $paramDouble = doubleval($param);
+                    $query->orWhere('books.overdue_fine','=',$paramDouble);
+                }
+            });
+        }
+
+        $pendingBorrowRequests->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $requestsWithLimit = $pendingBorrowRequests;
+
+        if($length>1)
+        {
+            $requestsWithLimit->take($length)->skip($start);
+        }
+
+        $requestsWithLimit = $requestsWithLimit->get();
+
+        //$booksWithLimit = Book::searchBooksCanBeBorrowedWithLimit($inputs)->get();
+
+        foreach($requestsWithLimit as $bookRequest)
+        {
+
+            $requestID = $bookRequest->id;
+            $approveButton = '<button class="borrow-book btn-actions btn btn-success glyphicon glyphicon-thumbs-up" data-toggle="modal" data-target="#request_modal" title="Approve borrow request" data-id="'.$requestID.'" data-action="approve_borrow_request"></button>';
+            $rejectButton = '<button class="borrow-book btn-actions btn btn-danger glyphicon glyphicon-thumbs-down" data-toggle="modal" data-target="#request_modal" title="Reject borrow bequest" data-id="'.$requestID.'" data-action="reject_borrow_request"></button>';
+
+            $data = [
+                'title' => '<span id="book-'.$requestID.'-title">'.$bookRequest->title.'</span>',
+                'isbn' => '<span id="book-'.$requestID.'-isbn">'.$bookRequest->isbn.'</span>',
+                'overdue_fine' => '<span id="book-'.$requestID.'-overdue_fine">'.$bookRequest->overdue_fine.'</span>',
+                'user_name' => '<span id="book-'.$requestID.'-shelf_location">'.$bookRequest->user_name.'</span>',
+                'email' => '<span id="book-'.$requestID.'-shelf_location">'.$bookRequest->email.'</span>',
+                'actions' => $approveButton.$rejectButton
+            ];
+
+            array_push($pendingBookBorrowRequests,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = $pendingBorrowRequests->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allPendingBookRequestsCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $pendingBookBorrowRequests   // total data array
         );
 
         return $responseData;

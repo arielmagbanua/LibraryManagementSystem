@@ -26,6 +26,11 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
     Route::get('/authors','AdminController@authors');
     Route::get('/books','AdminController@books');
     Route::get('/members','AdminController@members');
+    Route::get('/books/borrow_requests','AdminController@borrowRequests');
+
+    //admin actions for a book
+    Route::post('/book/{requestID}/approve_borrow_request','AdminController@approveBorrowRequest');
+    Route::post('/book/{requestID}/reject_borrow_request','AdminController@rejectBorrowRequest');
 });
 
 Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()
@@ -52,6 +57,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('authorsList','AuthorController@authorsList');
     Route::get('borrowBooksList','BookController@borrowBooksList');
     Route::get('pendingBorrowRequest','BookController@pendingBorrowRequest');
+    Route::get('pendingBorrowRequestForAdmin','BookController@pendingBorrowRequestForAdmin');
 });
 
 /**
@@ -76,3 +82,15 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
+
+Route::get('test',function(){
+
+    $pendingBorrowRequests = DB::table('borrowed_books')
+                                 ->select('books.title','books.isbn','books.overdue_fine','users.first_name','users.middle_name','users.last_name','users.email')
+                                 ->join('users','users.id','=','borrowed_books.user_id')
+                                 ->join('books','books.id','=','borrowed_books.book_id');
+
+
+
+    return $pendingBorrowRequests->count();
+});

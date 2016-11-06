@@ -59,7 +59,7 @@
                         <li class="@yield('admin-authors-class')"><a href="{{ url('admin/authors') }}">Authors @yield('admin-authors-current')</a></li>
                         <li class="@yield('admin-books-class')"><a href="{{ url('admin/books') }}">Books @yield('admin-books-current')</a></li>
                         <li class="@yield('admin-members-class')"><a href="{{ url('admin/members') }}">Members @yield('admin-members-current')</a></li>
-                        <li class="@yield('admin-borrowRequests-class')"><a href="{{ url('admin/borrowRequests') }}">Borrow Requests @yield('admin-borrowRequests-current')</a></li>
+                        <li class="@yield('admin-borrowRequests-class')"><a href="{{ url('admin/books/borrow_requests') }}">Borrow Requests @yield('admin-borrowRequests-current')</a></li>
                     @endif
 
                     @if(auth()->check() && auth()->user()->account_type == 2)

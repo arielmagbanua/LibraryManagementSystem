@@ -167,7 +167,8 @@
                             //Change the message of modal and hide the delete button
                             borrowButton.hide();
                             borrowCancelButton.removeAttr('disabled');
-                        });
+
+                        },false);
 
                     }
                 });

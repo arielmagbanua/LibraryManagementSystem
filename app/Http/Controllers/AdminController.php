@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Author;
+use App\BorrowedBook;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -55,5 +56,62 @@ class AdminController extends Controller
         $members = User::allMembers()->get();
 
         return view('admin.members',compact('members'));
+    }
+
+    /**
+     * Page for borrow requests
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function borrowRequests()
+    {
+        return view('admin.borrow_requests');
+    }
+
+    public function approveBorrowRequest($requestID)
+    {
+        $requestedBook = BorrowedBook::where('id',$requestID)->where('status',2)->first();
+        $result = $this->adminActionForBorrowRequest($requestedBook,'approve_borrow_request');
+        return response()->json($result,200);
+    }
+
+    public function rejectBorrowRequest($requestID)
+    {
+        $requestedBook = BorrowedBook::where('id',$requestID)->where('status',2)->first();
+        $result = $this->adminActionForBorrowRequest($requestedBook,'reject_borrow_request');
+        return response()->json($result,200);
+    }
+
+    public function adminActionForBorrowRequest($requestedBook,$action)
+    {
+        $responseData = [
+            'process' => 'unknown_process',
+            'status' => 'fail',
+            'message' => 'Unknown process'
+        ];
+
+        if($requestedBook->exists())
+        {
+            $responseData['process'] = $action;
+
+            if($action=='approve_borrow_request')
+            {
+                $requestedBook->status = 1;
+                $requestedBook->save();
+
+                $responseData['status'] = 'success';
+                $responseData['message'] = 'Book borrow request successfully approved!';
+            }
+            else if('reject_borrow_request')
+            {
+                if($requestedBook->delete())
+                {
+                    $responseData['status'] = 'success';
+                    $responseData['message'] = 'Book borrow request successfully rejected and was removed from the system.';
+                }
+            }
+        }
+
+        return $responseData;
     }
 }

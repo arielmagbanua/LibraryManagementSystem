@@ -39,4 +39,14 @@ class BorrowedBook extends Model
         'borrow_start_date',
         'date_returned',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
 }
