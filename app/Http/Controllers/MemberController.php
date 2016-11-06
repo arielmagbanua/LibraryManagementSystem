@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Book;
+use App\BorrowedBook;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -20,6 +20,26 @@ class MemberController extends Controller
     public function index()
     {
         return view('member.index');
+    }
+
+    /**
+     * Borrowed books page
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function borrowedBooks()
+    {
+        return view('member.borrowed_books');
+    }
+
+    /**
+     * Pending borrow request page
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function pendingBorrowRequest()
+    {
+        return view('member.pending_books');
     }
 
     /**
@@ -143,13 +163,32 @@ class MemberController extends Controller
         return response()->json($responseData,200);
     }
 
-    public function borrowedBooks()
+    public function cancelBorrowRequest(Request $request, $requestID)
     {
-        return view('member.borrowed_books');
-    }
+        $userID = $request->user()->id;
 
-    public function pendingBorrowedBooks()
-    {
-        return view('member.pending_books');
+        $borrowRequest =  BorrowedBook::where('id',$requestID)->where('user_id',$userID)->first();
+
+        $responseData = [
+            'process' => 'borrow_book',
+            'status' => 'success',
+            'message' => ''
+        ];
+
+        if($borrowRequest->exists())
+        {
+            //delete the request
+            $responseData['status'] = 'success';
+            $responseData['message'] = 'Borrow request was successfully cancelled!';
+
+            $borrowRequest->delete();
+        }
+        else
+        {
+            $responseData['status'] = 'fail';
+            $responseData['message'] = 'Borrow request not found!';
+        }
+
+        return response()->json($responseData,200);
     }
 }

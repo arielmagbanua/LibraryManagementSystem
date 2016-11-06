@@ -12,7 +12,25 @@
 @endsection
 
 @section('main-content')
-    Member
+
+    <h2>Pending Borr </h2>
+    <hr>
+
+    <table id="pending_borrowed_books_datatable" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Available</th>
+                <th>Overdue Fine</th>
+                <th>Shelf Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
 @endsection
 
 @section('footer-links')

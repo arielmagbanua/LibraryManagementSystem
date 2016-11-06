@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Book;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Log;
 
 class BookController extends Controller
 {
@@ -191,8 +191,6 @@ class BookController extends Controller
         {
             $borrowButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#borrow_book_modal" title="Borrow" data-id="'.$book->id.'" data-action="borrow_book">Borrow</button>';
 
-            Log::info($book);
-
             $data = [
                 'title' => '<span id="book-'.$book->id.'-title">'.$book->title.'</span>',
                 'author' => '<span id="book-'.$book->id.'-author" data-author="'.$book->author_id.'">'.$book->author_name.'</span>',
@@ -209,6 +207,91 @@ class BookController extends Controller
         if(!empty($param) || $param!='')
         {
             $totalFiltered = Book::searchBooksCanBeBorrowedWithoutLimit($inputs)->count();
+        }
+
+        $responseData = array(
+            "draw"            => intval($inputs['draw']),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => $allBooksCount,  // total number of records
+            "recordsFiltered" => $totalFiltered, // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $booksData   // total data array
+        );
+
+        return $responseData;
+    }
+
+    /**
+     * Server side processing url for books list datatable that are pending borrow request.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function pendingBorrowRequest(Request $request)
+    {
+        $inputs = $request->all();
+        $param = $inputs['search']['value'];
+        $start = $inputs['start'];
+        $length = $inputs['length'];
+
+        $columns = [
+            //datatable column index  => database column name
+            0 => 'title',
+            1 => 'isbn',
+            2 => 'overdue_fine',
+            3 => 'shelf_location'
+        ];
+
+        $booksData = [];
+
+        $pendingRequests = User::find(1)->borrowedBooks()->where('status',2);
+        $allBooksCount = $pendingRequests->count();
+        $totalFiltered = $allBooksCount;
+
+
+        $refinedPendingRequests = $pendingRequests->where(function($query) use ($param){
+
+                                $query->where('title','LIKE',"%$param%")
+                                      ->orWhere('isbn','LIKE',"%$param%")
+                                      ->orWhere('shelf_location','LIKE',"%$param%");
+
+                                if(is_double($param))
+                                {
+                                    $paramDouble = doubleval($param);
+                                    $query->orWhere('overdue_fine','=',$paramDouble);
+                                }
+        });
+
+        $refinedPendingRequests = $refinedPendingRequests->withPivot('id')->orderBy($columns[$inputs['order'][0]['column']],$inputs['order'][0]['dir']);
+        $booksWithLimit = $refinedPendingRequests;
+
+        if($length>1)
+        {
+            $booksWithLimit->take($length)->skip($start);
+        }
+
+        $booksWithLimit = $booksWithLimit->get();
+
+        //$booksWithLimit = Book::searchBooksCanBeBorrowedWithLimit($inputs)->get();
+
+        foreach($booksWithLimit as $book)
+        {
+
+            $requestID = $book->pivot->id;
+            $cancelButton = '<button class="borrow-book btn-actions btn btn-danger" data-toggle="modal" data-target="#cancel_request_modal" title="Cancel Borrow Request" data-id="'.$requestID.'" data-action="cancel_borrow_request">Cancel</button>';
+
+            $data = [
+                'title' => '<span id="book-'.$requestID.'-title">'.$book->title.'</span>',
+                'isbn' => '<span id="book-'.$requestID.'-isbn">'.$book->isbn.'</span>',
+                'overdue_fine' => '<span id="book-'.$requestID.'-overdue_fine">'.$book->overdue_fine.'</span>',
+                'shelf_location' => '<span id="book-'.$requestID.'-shelf_location">'.$book->shelf_location.'</span>',
+                'actions' => $cancelButton
+            ];
+
+            array_push($booksData,$data);
+        }
+
+        if(!empty($param) || $param!='')
+        {
+            $totalFiltered = $refinedPendingRequests->count();
         }
 
         $responseData = array(

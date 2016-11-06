@@ -63,6 +63,11 @@
     <script>
         $(document).ready(function()
         {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-Token': $('meta[name="_token"]').attr('content')
+                }
+            });
 
             var baseURL = $('#baseURL').html();
             var booksListURL = baseURL+'/serverSide/borrowBooksList';
@@ -137,27 +142,28 @@
                 console.log(borrowURL);
 
                 $.ajax({
-                    type: 'GET',
+                    type: 'post',
                     url: borrowURL,
                     success: function(data)
                     {
                         //remove the record in datatable
                         var table = $('#books_datatable').DataTable();
 
-                        if(data.status=='fail')
-                        {
-                            $('.modal-title').html('Ooppps!');
-                            $('#borrow_modal_message').html(data.message);
-                            borrowCancelButton.html('Ok, Understand');
-                        }
-                        else
-                        {
-                            $('.modal-title').html('Borrow');
-                            $('#borrow_modal_message').html(data.message);
-                            borrowCancelButton.html('Close');
-                        }
-
                         table.ajax.reload(function(){
+
+                            if(data.status=='fail')
+                            {
+                                $('.modal-title').html('Ooppps!');
+                                $('#borrow_modal_message').html(data.message);
+                                borrowCancelButton.html('Ok, Understand');
+                            }
+                            else
+                            {
+                                $('.modal-title').html('Borrow');
+                                $('#borrow_modal_message').html(data.message);
+                                borrowCancelButton.html('Close');
+                            }
+
                             //Change the message of modal and hide the delete button
                             borrowButton.hide();
                             borrowCancelButton.removeAttr('disabled');

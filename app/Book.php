@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \App\Author $author
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $borrowers
  * @method static \Illuminate\Database\Query\Builder|\App\Book whereDeletedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book searchBooksCanBeBorrowedWithLimit($inputs)
+ * @method static \Illuminate\Database\Query\Builder|\App\Book searchBooksCanBeBorrowedWithoutLimit($inputs)
  */
 class Book extends Model
 {
