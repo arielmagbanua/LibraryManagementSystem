@@ -134,6 +134,30 @@
                     //set the body message to default
                     $('#request_modal_message').html('Are you sure that '+memberName+' already returned this book?');
                 }
+                else if(invokerAction=='return_book_pending')
+                {
+                    $('.modal-title').html('Return Book as Pending Request.');
+
+                    yesButton.data('action','return_book_pending');
+
+                    //load the id to the hidden field of the modal for deletion
+                    $('#request_id_to_return').val(requestID);
+
+                    //set the yes button to defaults
+                    yesButton.removeClass('btn-default');
+                    yesButton.removeClass('btn-danger');
+                    yesButton.addClass('btn-primary');
+                    yesButton.removeAttr('disabled');
+                    yesButton.show();
+
+                    yesLabel.html('Yes');
+                    yesLabel.removeClass('fa fa-spin fa-spinner');
+
+                    $('#cancel_button').html('Cancel');
+
+                    //set the body message to default
+                    $('#request_modal_message').html('Are you sure you want to return this borrowed book as pending request?');
+                }
 
             });
 
@@ -163,9 +187,9 @@
                 {
                     actionURL = baseURL + '/admin/book/'+requestID+'/book_returned';
                 }
-                else if(yesAction==='return_pending')
+                else if(yesAction==='return_book_pending')
                 {
-                    //actionURL = baseURL + '/admin/book/'+requestID+'/reject_borrow_request';
+                    actionURL = baseURL + '/admin/book/'+requestID+'/return_book_pending';
                 }
 
                 console.log(actionURL);

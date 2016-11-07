@@ -33,6 +33,7 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','admin']], function(
     Route::post('/book/{requestID}/approve_borrow_request','AdminController@approveBorrowRequest');
     Route::post('/book/{requestID}/reject_borrow_request','AdminController@rejectBorrowRequest');
     Route::post('/book/{requestID}/book_returned','AdminController@bookReturned');
+    Route::post('/book/{requestID}/return_book_pending','AdminController@returnBookPending');
 });
 
 Route::group(['prefix' => 'member',  'middleware' => ['auth','member']], function()
@@ -88,10 +89,3 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
-
-Route::get('test',function(){
-
-    $books = App\Book::orderBy('created_at','desc')->paginate(3);
-
-    return $books;
-});

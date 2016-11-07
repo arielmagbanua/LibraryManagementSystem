@@ -133,6 +133,13 @@ class AdminController extends Controller
         return response()->json($result,200);
     }
 
+    public function returnBookPending($requestID)
+    {
+        $requestedBook = BorrowedBook::where('id',$requestID)->where('status',1)->first();
+        $result = $this->adminActionForBookReturned($requestedBook,'return_book_pending');
+        return response()->json($result,200);
+    }
+
     public function adminActionForBookReturned($requestedBook,$action)
     {
         $responseData = [
@@ -154,16 +161,14 @@ class AdminController extends Controller
                 $responseData['status'] = 'success';
                 $responseData['message'] = 'The book is successfully marked as returned!';
             }
-            /*
-            else if('reject_borrow_request')
+            else if('return_book_pending')
             {
-                if($requestedBook->delete())
-                {
-                    $responseData['status'] = 'success';
-                    $responseData['message'] = 'Book borrow request successfully rejected and was removed from the system.';
-                }
+                $requestedBook->status = 2;
+                $requestedBook->save();
+
+                $responseData['status'] = 'success';
+                $responseData['message'] = 'The borrowed book is successfully sent back to pending list.';
             }
-            */
         }
 
         return $responseData;

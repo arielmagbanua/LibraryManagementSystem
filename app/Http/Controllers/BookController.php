@@ -586,8 +586,8 @@ class BookController extends Controller
         {
 
             $requestID = $book->id;
-            $returnButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#request_modal" title="Click to return this book" data-member="'.$book->author_name.'" data-id="'.$requestID.'" data-action="return_book">Return</button>';
-            //$pending = '<button class="borrow-book btn-actions btn btn-danger glyphicon glyphicon-thumbs-down" data-toggle="modal" data-target="#request_modal" title="Reject borrow bequest" data-id="'.$requestID.'" data-action="reject_borrow_request"></button>';
+            $returnButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#request_modal" title="Click to mark this book as returned." data-member="'.$book->author_name.'" data-id="'.$requestID.'" data-action="return_book">Return</button>';
+            $returnToPending = '<button class="borrow-book btn-actions btn btn-primary" data-toggle="modal" data-target="#request_modal" title="Click to return to pending request." data-id="'.$requestID.'" data-action="return_book_pending">Return To Pending</button>';
 
             $fineTextColor = ($book->fine > 0.0) ? 'red' : 'black';
 
@@ -599,7 +599,7 @@ class BookController extends Controller
                 'fine' => '<span id="book-'.$requestID.'-fine" style="color:'.$fineTextColor.'">'.$book->fine.'</span>',
                 'borrower' => '<span id="book-'.$requestID.'-user_name">'.$book->user_name.'</span>',
                 'borrower_email' => '<span id="book-'.$requestID.'-email">'.$book->email.'</span>',
-                'actions' => $returnButton
+                'actions' => $returnButton.$returnToPending
             ];
 
             array_push($borrowedBooksData,$data);
