@@ -436,7 +436,7 @@ class BookController extends Controller
         $borrowedBooksData = [];
 
         $borrowedBooks = DB::table('borrowed_books')
-                            ->select('borrowed_books.id','books.title','books.isbn', DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'),'borrowed_books.fine')
+                            ->select('borrowed_books.id','books.title','books.isbn', DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'),DB::raw('DATE(ADDDATE(borrowed_books.borrow_start_date, + 14)) AS return_date'),'borrowed_books.fine')
                             ->join('books','books.id','=','borrowed_books.book_id')
                             ->join('authors','authors.id','=','books.author_id')
                             ->where('borrowed_books.status','=',1)
@@ -463,6 +463,7 @@ class BookController extends Controller
                 if($this->validateDate($param))
                 {
                     $query->orWhere('DATE(borrow_start_date)','=',"DATE($param)");
+                    $query->orWhere('DATE(return_date)','=',"DATE($param)");
                 }
             });
         }
@@ -489,7 +490,7 @@ class BookController extends Controller
                 'author_name' => '<span id="book-'.$requestID.'-author_name">'.$book->author_name.'</span>',
                 'isbn' => '<span id="book-'.$requestID.'-isbn">'.$book->isbn.'</span>',
                 'borrow_start_date' => '<span id="book-'.$requestID.'-borrow_start_date">'.$book->borrow_start_date.'</span>',
-                //'fine' => '<span id="book-'.$requestID.'-fine" style="color:'.$fineTexColor.';">'.$book->fine.'</span>'
+                'return_date' => '<span id="book-'.$requestID.'-return_date">'.$book->return_date.'</span>',
                 'fine' => $book->fine
             ];
 

@@ -24,13 +24,14 @@
                 <th>Author</th>
                 <th>ISBN</th>
                 <th>Borrow Start Date</th>
+                <th>Return Date</th>
                 <th>Fine</th>
             </tr>
         </thead>
         <tbody></tbody>
         <tfoot>
             <tr>
-                <th colspan="4" style="text-align:right; color: red;">Total:</th>
+                <th colspan="5" style="text-align:right; color: red;">Total:</th>
                 <th style="color: red;"></th>
             </tr>
         </tfoot>
@@ -61,6 +62,7 @@
                 {'data':'author_name'},
                 {'data':'isbn'},
                 {'data':'borrow_start_date'},
+                {'data':'return_date'},
                 {'data':'fine'}
             ],
             'footerCallback':function(row, data, start, end, display)
@@ -77,7 +79,7 @@
 
                 // Total over all pages
                 var total = api
-                        .column(4)
+                        .column(5)
                         .data()
                         .reduce(function (a, b) {
                             return intVal(a) + intVal(b);
@@ -85,14 +87,14 @@
 
                 //Total over this page
                 var pageTotal = api
-                        .column( 4, { page: 'current'} )
+                        .column(5, { page: 'current'} )
                         .data()
                         .reduce(function (a, b) {
                             return intVal(a) + intVal(b);
                         },0);
 
                 // Update footer
-                $(api.column(4).footer()).html(pageTotal +' ( '+ total +' total)');
+                $(api.column(5).footer()).html(pageTotal +' ( '+ total +' total)');
 
                 //set the total to the free-slot in the header
                 var freeSlotLink = $('.free-slot-link-1');
