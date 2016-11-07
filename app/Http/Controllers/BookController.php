@@ -585,9 +585,21 @@ class BookController extends Controller
         foreach($allBorrowedBooksWithLimit as $book)
         {
 
+            //check if the borrow start date already started. If not then the borrow can be sent back to pending else disable the send back button
+            $dateNow = Carbon::now();
+            $borrowStartDate = Carbon::parse($book->borrow_start_date);
+
+            $dateDiff = $dateNow->diffInDays($borrowStartDate,false);
+
             $requestID = $book->id;
-            $returnButton = '<button class="borrow-book btn-actions btn btn-success" data-toggle="modal" data-target="#request_modal" title="Click to mark this book as returned." data-member="'.$book->author_name.'" data-id="'.$requestID.'" data-action="return_book">Return</button>';
-            $returnToPending = '<button class="borrow-book btn-actions btn btn-primary" data-toggle="modal" data-target="#request_modal" title="Click to return to pending request." data-id="'.$requestID.'" data-action="return_book_pending">Return To Pending</button>';
+            $returnButton = '<button class="borrow-book btn-actions btn btn-success glyphicon glyphicon-ok" data-toggle="modal" data-target="#request_modal" title="Click to mark this book as returned." data-member="'.$book->author_name.'" data-id="'.$requestID.'" data-action="return_book"></button>';
+            $returnToPending = '<button class="borrow-book btn-actions btn btn-primary glyphicon glyphicon-repeat" data-toggle="modal" data-target="#request_modal" title="Click to return to pending request." data-id="'.$requestID.'" data-action="return_book_pending"></button>';
+
+            if($dateDiff<0)
+            {
+                //this means that the borrowing already started this means this return to pending should be disabled
+                $returnToPending = '<button class="borrow-book btn-actions btn btn-primary glyphicon glyphicon-repeat" data-toggle="modal" data-target="#request_modal" title="You cannot return this to pending since the borrow already started." data-id="'.$requestID.'" data-action="return_book_pending" disabled="true"></button>';
+            }
 
             $fineTextColor = ($book->fine > 0.0) ? 'red' : 'black';
 
