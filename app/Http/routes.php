@@ -90,12 +90,8 @@ Route::controllers([
 ]);
 
 Route::get('test',function(){
-    $borrowedBooks = DB::table('borrowed_books')
-        ->select('borrowed_books.id','books.title','books.isbn', DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'),'borrowed_books.fine')
-        ->join('books','books.id','=','borrowed_books.book_id')
-        ->join('authors','authors.id','=','books.author_id')
-        ->where('borrowed_books.status','=',1)
-        ->where('borrowed_books.user_id','=',1)->get();
 
-    return $borrowedBooks;
+    $books = App\Book::orderBy('created_at','desc')->paginate(3);
+
+    return $books;
 });
