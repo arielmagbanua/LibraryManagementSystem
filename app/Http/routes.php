@@ -65,6 +65,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('pendingBorrowRequestForAdmin','BookController@pendingBorrowRequestForAdmin');
     Route::get('borrowedBooksList','BookController@borrowedBooksList');
     Route::get('memberBorrowedBooksList','BookController@memberBorrowedBooksList');
+    Route::get('borrowStatistics','BookController@borrowStatistics');
 });
 
 /**

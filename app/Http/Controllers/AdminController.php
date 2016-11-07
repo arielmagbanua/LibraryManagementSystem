@@ -20,6 +20,17 @@ class AdminController extends Controller
      */
     public function index()
     {
+        $borrowedBooks = BorrowedBook::with('user')->with('book')->with('book.author')->get();
+
+        $borrowers = [];
+        $books = [];
+        $authors = [];
+
+        foreach($borrowedBooks as $borrowedBook)
+        {
+
+        }
+
         return view('admin.index');
     }
 
