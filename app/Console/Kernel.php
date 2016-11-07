@@ -14,6 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\Inspire::class,
+        Commands\BookFineWatcher::class
+
     ];
 
     /**
@@ -26,5 +28,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')
                  ->hourly();
+
+        //run the watcher everyday to calculate fines
+        $schedule->command('execute:book-fine-watcher')
+                 ->daily();
     }
 }

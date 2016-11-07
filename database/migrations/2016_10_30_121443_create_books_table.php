@@ -18,7 +18,7 @@ class CreateBooksTable extends Migration
             $table->integer('author_id')->unsigned()->nullable()->index();
             $table->string('isbn',30);
             $table->integer('quantity')->unsigned()->default(0);
-            $table->decimal('overdue_fine', 5, 3)->default(0.0);
+            $table->double('overdue_fine', 15, 3)->default(2.0);
             $table->string('shelf_location',20);
             $table->softDeletes();
             $table->timestamps();

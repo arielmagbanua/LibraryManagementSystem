@@ -89,3 +89,21 @@ Route::controllers([
     'auth' => 'Auth\AuthController',
     'password' => 'Auth\PasswordController',
 ]);
+
+Route::get('test', function(){
+
+    $borrowedBooks = App\BorrowedBook::whereRaw(DB::raw('ADDDATE(borrow_start_date, + 14) < NOW()'))->where('status',1)->with('book')->get();
+
+    foreach($borrowedBooks as $borrowedBook)
+    {
+        //calculate the fine
+        $dateNow = Carbon\Carbon::now();
+        $borrowStartDate = Carbon\Carbon::parse($borrowedBook->borrow_start_date);
+        $diffInDays =  $borrowStartDate->diffInDays($dateNow,true);
+
+        $borrowedBook->fine = doubleval($diffInDays) * doubleval($borrowedBook->book->overdue_fine);
+        $borrowedBook->save();
+    }
+
+    return $borrowedBooks;
+});
