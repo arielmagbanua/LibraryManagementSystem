@@ -13,4 +13,8 @@ var elixir = require('laravel-elixir');
 
 elixir(function(mix) {
     mix.sass('app.scss');
+
+    //javascript minifying
+    mix.scripts('admin/authors.js', 'public/js/admin/authors.min.js');
 });
+
