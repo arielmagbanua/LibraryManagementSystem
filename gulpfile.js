@@ -14,7 +14,7 @@ var elixir = require('laravel-elixir');
 elixir(function(mix) {
     mix.sass('app.scss');
 
-    //javascript minifying for admin pages
+    //javascript watching and minifying for admin pages
     mix.scripts('admin/authors.js', 'public/js/admin/authors.min.js')
         .scripts('admin/books.js', 'public/js/admin/books.min.js')
         .scripts('admin/index.js', 'public/js/admin/index.min.js')
@@ -22,5 +22,10 @@ elixir(function(mix) {
         .scripts('admin/member-borrowed-books.js', 'public/js/admin/member-borrowed-books.min.js')
         .scripts('admin/members.js', 'public/js/admin/members.min.js');
 
+    //javascript watching and minifying for admin pages
+    mix.scripts('member/books.js', 'public/js/member/books.min.js')
+        .scripts('member/borrowed-books.js', 'public/js/member/borrowed-books.min.js')
+        .scripts('member/index.js', 'public/js/member/index.min.js')
+        .scripts('member/pending-books.js', 'public/js/member/pending-books.min.js');
 });
 
