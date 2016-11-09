@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Author;
+use App\Book;
 use App\BorrowedBook;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,19 +20,27 @@ class AdminController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $borrowedBooks = BorrowedBook::with('user')->with('book')->with('book.author')->get();
+    {;
+        $titles = Book::orderBy('title')->lists('title','title');
+        $authors = Author::select(DB::raw("CONCAT(first_name,' ',middle_name,' ',last_name) AS author_name"),'id')->orderBy('author_name')->lists('author_name','id');
+        $borrowers = User::select(DB::raw("CONCAT(first_name,' ',middle_name,' ',last_name) AS borrower"),'id')->orderBy('borrower')->lists('borrower','id');
+        $isbns = Book::orderBy('isbn')->lists('isbn','isbn');
 
-        $borrowers = [];
-        $books = [];
-        $authors = [];
+        $statuses = [
+            0 => 'Returned',
+            1 => 'Borrowed',
+            2 => 'Pending Request'
+        ];
 
-        foreach($borrowedBooks as $borrowedBook)
-        {
+        $groupings = [
+            'title' => 'Title',
+            'authors.id' => 'Author',
+            'books.isbn' => 'ISBN',
+            'borrowed_books.status' => 'Status',
+            'users.id' => 'Borrower',
+        ];
 
-        }
-
-        return view('admin.index');
+        return view('admin.index',compact('titles','authors','borrowers','isbns','statuses','groupings'));
     }
 
     /**

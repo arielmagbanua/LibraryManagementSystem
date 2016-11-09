@@ -11,6 +11,10 @@ use App\Http\Requests\AddBookRequest;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use DB;
+use DateTime;
+use Log;
+use Cache;
+use Excel;
 
 class BookController extends Controller
 {
@@ -651,33 +655,63 @@ class BookController extends Controller
             0 => 'books.title',
             1 => 'author_name',
             2 => 'books.isbn',
-            3 => 'borrow_start_date',
-            4 => 'borrowed_books.fine',
-            5 => 'user_name',
-            6 => 'users.email'
+            3 => 'borrowed_books.status',
+            4 => 'borrow_start_date',
+            5 => 'borrowed_books.date_returned',
+            6 => 'user_name',
+            7 => 'borrowed_books.fine'
         ];
 
         $borrowedBooksData = [];
 
         $allBorrowedBooks = DB::table('borrowed_books')
-            ->select('borrowed_books.id','books.title',DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),'books.isbn', DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'), 'borrowed_books.fine', DB::raw("CONCAT(users.first_name,' ',users.middle_name,' ',users.last_name) AS user_name"),'users.email')
+            ->select('borrowed_books.id','users.id','books.id','books.title',DB::raw("CONCAT(authors.first_name,' ',authors.middle_name,' ',authors.last_name) AS author_name"),'books.isbn', DB::raw('DATE(borrowed_books.borrow_start_date) AS borrow_start_date'), 'borrowed_books.date_returned', 'borrowed_books.fine', DB::raw("CONCAT(users.first_name,' ',users.middle_name,' ',users.last_name) AS user_name"),'borrowed_books.status')
             ->join('users','users.id','=','borrowed_books.user_id')
             ->join('books','books.id','=','borrowed_books.book_id')
-            ->join('authors','authors.id','=','books.author_id')
-            ->where('borrowed_books.status',1);
+            ->join('authors','authors.id','=','books.author_id');
 
         $allBorrowedBooksCount = $allBorrowedBooks->count();
         $totalFiltered = $allBorrowedBooksCount;
 
-        if(!empty($param) || $param!='')
+        if(isset($inputs['title']) && !empty($inputs['title']))
+        {
+            $allBorrowedBooks->where('books.title','LIKE',"%".$inputs['title']."%");
+        }
+
+        if(isset($inputs['author_id']) && !empty($inputs['author_id']))
+        {
+            log::info('author_id: '.$inputs['author_id']);
+            $allBorrowedBooks->where('authors.id','=',$inputs['author_id']);
+        }
+
+        if(isset($inputs['isbn']) && !empty($inputs['isbn']))
+        {
+            log::info('isbn: '.$inputs['isbn']);
+            $allBorrowedBooks->where('books.isbn','LIKE',"%".$inputs['isbn']."%");
+        }
+
+        if(isset($inputs['status']) && !empty($inputs['status']))
+        {
+            $allBorrowedBooks->where('borrowed_books.status','=',$inputs['status']);
+        }
+
+        if(isset($inputs['user_id']) && !empty($inputs['user_id']))
+        {
+            $allBorrowedBooks->where('users.id','=',$inputs['user_id']);
+        }
+
+        if(!empty($param))
         {
             $allBorrowedBooks->where(function($query) use ($param){
 
                 $query->where('books.title','LIKE',"%$param%")
-                    ->orWhere('author_name','LIKE',"%$param%")
+                    ->orWhere('authors.first_name','LIKE',"%$param%")
+                    ->orWhere('authors.middle_name','LIKE',"%$param%")
+                    ->orWhere('authors.last_name','LIKE',"%$param%")
                     ->orWhere('books.isbn','LIKE',"%$param%")
-                    ->orWhere('user_name','LIKE',"%$param%")
-                    ->orWhere('users.email','LIKE',"%$param%");
+                    ->orWhere('users.first_name','LIKE',"%$param%")
+                    ->orWhere('users.middle_name','LIKE',"%$param%")
+                    ->orWhere('users.last_name','LIKE',"%$param%");
 
                 if(is_double($param))
                 {
@@ -685,10 +719,17 @@ class BookController extends Controller
                     $query->orWhere('borrowed_books.fine','=',$paramDouble);
                 }
 
+                if(is_integer($param))
+                {
+                    $paramDouble = intval($param);
+                    $query->orWhere('borrowed_books.status','=',$paramDouble);
+                }
+
                 //for borrow_start_date
                 if($this->validateDate($param))
                 {
-                    $query->orWhere('DATE(borrow_start_date)','=',"DATE($param)");
+                    $query->orWhere('DATE(borrow_start_date)','=',"DATE($param)")
+                            ->orWhere('DATE(borrowed_books.date_returned)','=',"DATE($param)");
                 }
 
             });
@@ -704,42 +745,29 @@ class BookController extends Controller
 
         $allBorrowedBooksWithLimit = $allBorrowedBooksWithLimit->get();
 
+        Cache::put('borrow_list',$allBorrowedBooksWithLimit,60);
+
         foreach($allBorrowedBooksWithLimit as $book)
         {
 
-            //check if the borrow start date already started. If not then the borrow can be sent back to pending else disable the send back button
-            $dateNow = Carbon::now();
-            $borrowStartDate = Carbon::parse($book->borrow_start_date);
-
-            $dateDiff = $dateNow->diffInDays($borrowStartDate,false);
-
             $requestID = $book->id;
-            $returnButton = '<button class="borrow-book btn-actions btn btn-success glyphicon glyphicon-ok" data-toggle="modal" data-target="#request_modal" title="Click to mark this book as returned." data-member="'.$book->author_name.'" data-id="'.$requestID.'" data-action="return_book"></button>';
-            $returnToPending = '<button class="borrow-book btn-actions btn btn-primary glyphicon glyphicon-repeat" data-toggle="modal" data-target="#request_modal" title="Click to return to pending request." data-id="'.$requestID.'" data-action="return_book_pending"></button>';
-
-            if($dateDiff<0)
-            {
-                //this means that the borrowing already started this means this return to pending should be disabled
-                $returnToPending = '<button class="borrow-book btn-actions btn btn-primary glyphicon glyphicon-repeat" data-toggle="modal" data-target="#request_modal" title="You cannot return this to pending since the borrow already started." data-id="'.$requestID.'" data-action="return_book_pending" disabled="true"></button>';
-            }
-
-            $fineTextColor = ($book->fine > 0.0) ? 'red' : 'black';
 
             $data = [
                 'title' => '<span id="book-'.$requestID.'-title">'.$book->title.'</span>',
                 'author_name' => '<span id="book-'.$requestID.'-author_name">'.$book->author_name.'</span>',
                 'isbn' => '<span id="book-'.$requestID.'-isbn">'.$book->isbn.'</span>',
+                'status' => '<span id="book-'.$requestID.'-status">'.$book->status.'</span>',
                 'borrow_start_date' => '<span id="book-'.$requestID.'-borrow_start_date">'.$book->borrow_start_date.'</span>',
-                'fine' => '<span id="book-'.$requestID.'-fine" style="color:'.$fineTextColor.'">'.$book->fine.'</span>',
+                'date_returned' => '<span id="book-'.$requestID.'-date_returned">'.$book->date_returned == '0000-00-00 00:00:00' ? '':$book->date_returned.'</span>',
                 'borrower' => '<span id="book-'.$requestID.'-user_name">'.$book->user_name.'</span>',
-                'borrower_email' => '<span id="book-'.$requestID.'-email">'.$book->email.'</span>',
-                'actions' => $returnButton.$returnToPending
+                //'fine' => '<span id="book-'.$requestID.'-fine">'.$book->fine.'</span>'
+                'fine' => $book->fine
             ];
 
             array_push($borrowedBooksData,$data);
         }
 
-        if(!empty($param) || $param!='')
+        if(!empty($param))
         {
             $totalFiltered = $allBorrowedBooks->count();
         }
@@ -752,6 +780,105 @@ class BookController extends Controller
         );
 
         return $responseData;
+    }
+
+    public function downloadBorrowReport()
+    {
+        //get the cached items
+        $items = Cache::get('borrow_list');
+
+        $fileName = 'Book_Loan_Report_'.Carbon::now()->toDateString();
+        $sheetTitle = $fileName;
+
+        Excel::create($fileName,function($excel) use($fileName,$sheetTitle,$items)
+        {
+            $excel->sheet($sheetTitle,function($sheet) use($fileName,$items)
+            {
+                $rowNumber = 1;
+                $firstDataRowNumber = 1;
+
+                //Set auto size for sheet
+                $sheet->setAutoSize(true);
+
+                //style the headers
+                $sheet->cells("A$rowNumber:H$rowNumber", function($cells)
+                {
+                    // Set font
+                    $cells->setFont([
+                        'size'       => '12',
+                        'bold'       =>  true
+                    ]);
+
+                    $cells->setAlignment('center');
+                    $cells->setValignment('center');
+                    $cells->setBackground('#337ab7');
+                });
+
+                $headers = [
+                    'Title', 'Author', 'ISBN', 'Status', 'Borrow Start Date', 'Returned Date', 'Borrower', 'Fine'
+                ];
+
+                $sheet->appendRow($headers);
+                ++$rowNumber;
+                ++$firstDataRowNumber;
+
+                foreach($items as $item)
+                {
+                    $row = [
+                        $item->title,
+                        $item->author_name,
+                        $item->isbn,
+                        $item->status,
+                        $item->borrow_start_date,
+                        $item->date_returned,
+                        $item->user_name,
+                        $item->fine
+                    ];
+
+                    //append the lead data
+                    $sheet->appendRow($row);
+
+                    ++$rowNumber;
+                    //++$firstDataRowNumber;
+                }
+
+                $sheet->cell("G$rowNumber", function($cell) {
+
+                    // manipulate the cell
+                    $cell->setValue('TOTAL');
+                    $cell->setAlignment('right');
+                    $cell->setFont([
+                        'bold'       =>  true
+                    ]);
+
+                });
+
+                $lastRowNumber = $rowNumber - 1;
+                $sheet->cell("H$rowNumber", function($cell) use($firstDataRowNumber,$lastRowNumber) {
+
+                    // manipulate the cell
+                    $cell->setValue("=SUM(H$firstDataRowNumber:H$lastRowNumber)");
+                    $cell->setAlignment('right');
+                    $cell->setFont([
+                        'bold'       =>  true
+                    ]);
+                });
+
+            });
+        })->store('xls',storage_path('app'));
+
+        $filePath = storage_path('app').'/'.$fileName.'.xls';
+
+        if(file_exists($filePath))
+        {
+            return response()->download($filePath,$fileName.'.xls',[
+                'Content-Length: '.filesize($filePath)
+            ]);
+        }
+        else
+        {
+            exit('Requested file does not exist on our server!');
+        }
     }
 
     /**

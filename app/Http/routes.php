@@ -66,6 +66,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('borrowedBooksList','BookController@borrowedBooksList');
     Route::get('memberBorrowedBooksList','BookController@memberBorrowedBooksList');
     Route::get('borrowStatistics','BookController@borrowStatistics');
+    Route::get('downloadBorrowReport','BookController@downloadBorrowReport');
 });
 
 /**
@@ -93,18 +94,18 @@ Route::controllers([
 
 Route::get('test', function(){
 
-    $borrowedBooks = App\BorrowedBook::whereRaw(DB::raw('ADDDATE(borrow_start_date, + 14) < NOW()'))->where('status',1)->with('book')->get();
 
-    foreach($borrowedBooks as $borrowedBook)
-    {
-        //calculate the fine
-        $dateNow = Carbon\Carbon::now();
-        $borrowStartDate = Carbon\Carbon::parse($borrowedBook->borrow_start_date);
-        $diffInDays =  $borrowStartDate->diffInDays($dateNow,true);
+            $filePath = storage_path('app').'/'.$fileName.'.xls';
 
-        $borrowedBook->fine = doubleval($diffInDays) * doubleval($borrowedBook->book->overdue_fine);
-        $borrowedBook->save();
-    }
+            Log::info($filePath);
 
-    return $borrowedBooks;
+            if(file_exists($filePath))
+            {
+                return response()->download($filePath,$fileName.'.xls');
+            }
+            else
+            {
+                //exit('Requested file does not exist on our server!');
+                return 'Requested file does not exist on our server!';
+            }
 });
