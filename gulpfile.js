@@ -27,5 +27,8 @@ elixir(function(mix) {
         .scripts('member/borrowed-books.js', 'public/js/member/borrowed-books.min.js')
         .scripts('member/index.js', 'public/js/member/index.min.js')
         .scripts('member/pending-books.js', 'public/js/member/pending-books.min.js');
+
+    //form process javascript
+    mix.scripts('form-process.js', 'public/js/form-process.min.js');
 });
 
