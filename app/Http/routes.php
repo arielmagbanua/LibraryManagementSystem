@@ -67,6 +67,7 @@ Route::group(['prefix' => 'serverSide'], function()
     Route::get('memberBorrowedBooksList','BookController@memberBorrowedBooksList');
     Route::get('borrowStatistics','BookController@borrowStatistics');
     Route::get('downloadBorrowReport','BookController@downloadBorrowReport');
+    Route::get('downloadBooksList','BookController@downloadBooksList');
 });
 
 /**
@@ -92,20 +93,8 @@ Route::controllers([
     'password' => 'Auth\PasswordController',
 ]);
 
-Route::get('test', function(){
+Route::get('test',function(){
+    $books = App\Book::with('author')->get();
 
-
-            $filePath = storage_path('app').'/'.$fileName.'.xls';
-
-            Log::info($filePath);
-
-            if(file_exists($filePath))
-            {
-                return response()->download($filePath,$fileName.'.xls');
-            }
-            else
-            {
-                //exit('Requested file does not exist on our server!');
-                return 'Requested file does not exist on our server!';
-            }
+    return $books;
 });

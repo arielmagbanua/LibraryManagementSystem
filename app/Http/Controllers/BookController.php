@@ -15,6 +15,7 @@ use DateTime;
 use Log;
 use Cache;
 use Excel;
+use PHPExcel_Style_NumberFormat;
 
 class BookController extends Controller
 {
@@ -863,6 +864,86 @@ class BookController extends Controller
                         'bold'       =>  true
                     ]);
                 });
+
+            });
+        })->store('xls',storage_path('app'));
+
+        $filePath = storage_path('app').'/'.$fileName.'.xls';
+
+        if(file_exists($filePath))
+        {
+            return response()->download($filePath,$fileName.'.xls',[
+                'Content-Length: '.filesize($filePath)
+            ]);
+        }
+        else
+        {
+            exit('Requested file does not exist on our server!');
+        }
+    }
+
+    public function downloadBooksList()
+    {
+        //get all books
+        $books = Book::with('author')->get();
+
+        $fileName = 'Books_'.Carbon::now()->toDateString();
+        $sheetTitle = 'Books';
+
+        Excel::create($fileName,function($excel) use($fileName,$sheetTitle,$books)
+        {
+            $excel->sheet($sheetTitle,function($sheet) use($fileName,$books)
+            {
+                $rowNumber = 1;
+                $firstDataRowNumber = 1;
+
+                //Set auto size for sheet
+                $sheet->setAutoSize(true);
+
+                //style the headers
+                $sheet->cells("A$rowNumber:G$rowNumber", function($cells)
+                {
+                    // Set font
+                    $cells->setFont([
+                        'size'       => '12',
+                        'bold'       =>  true
+                    ]);
+
+                    $cells->setAlignment('center');
+                    $cells->setValignment('center');
+                    $cells->setBackground('#337ab7');
+                });
+
+                $sheet->setColumnFormat([
+                    'C' => PHPExcel_Style_NumberFormat::FORMAT_TEXT
+                ]);
+
+                $headers = [
+                    'Title', 'Author', 'ISBN', 'Quantity', 'Overdue Fine', 'Shelf Location', 'Date Added'
+                ];
+
+                $sheet->appendRow($headers);
+                ++$rowNumber;
+                ++$firstDataRowNumber;
+
+                foreach($books as $book)
+                {
+                    $row = [
+                        $book->title,
+                        $book->author->first_name.' '.$book->author->middle_name.' '.$book->author->last_name,
+                        $book->isbn.'',
+                        $book->quantity,
+                        $book->overdue_fine,
+                        $book->shelf_location,
+                        $book->created_at
+                    ];
+
+                    //append the lead data
+                    $sheet->appendRow($row);
+
+                    ++$rowNumber;
+                    //++$firstDataRowNumber;
+                }
 
             });
         })->store('xls',storage_path('app'));

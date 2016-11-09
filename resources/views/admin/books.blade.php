@@ -152,7 +152,7 @@
                 ]
             });
 
-            $("div.add_book").html('<button class="btn btn-success" data-action="add_book" data-toggle="modal" data-target="#book_modal_form">Add Book</button>');
+            $("div.add_book").html('<button class="btn btn-success" data-action="add_book" data-toggle="modal" data-target="#book_modal_form">Add Book</button><a style="margin-left: 8px" class="btn btn-primary" href="'+baseURL+'/serverSide/downloadBooksList">Download List</a>');
 
             $('#book_modal_form').on('show.bs.modal', function (e) {
 
