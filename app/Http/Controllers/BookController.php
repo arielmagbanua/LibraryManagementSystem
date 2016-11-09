@@ -931,7 +931,7 @@ class BookController extends Controller
                     $row = [
                         $book->title,
                         $book->author->first_name.' '.$book->author->middle_name.' '.$book->author->last_name,
-                        $book->isbn.'',
+                        $book->isbn,
                         $book->quantity,
                         $book->overdue_fine,
                         $book->shelf_location,
