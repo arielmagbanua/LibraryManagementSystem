@@ -13,7 +13,7 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         $member = User::firstOrNew([
-        		'email' => 'ariel@amazing.com'
+        		'email' => 'ariel@example.com'
         	]);
 
         $member->first_name = 'Ariel';
@@ -26,7 +26,7 @@ class UserTableSeeder extends Seeder
         $member->save();
 
         $admin = User::firstOrNew([
-        		'email' => 'admin@amazing.com'
+        		'email' => 'admin@example.com'
         	]);
 
         $admin->first_name = 'John';
