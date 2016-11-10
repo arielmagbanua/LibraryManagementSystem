@@ -13,11 +13,11 @@ A simple library management system.
 
 ## Installation
 
-* execute composer install or composer install --no-plugins --no-scripts
+* execute `composer install` or `composer install --no-plugins --no-scripts`
 * configure .env file at the root of the project
-* execute php artisan key:generate
-* execute php artisan migrate
-* execute php artisan db:seed
+* execute `php artisan key:generate`
+* execute `php artisan migrate`
+* execute `php artisan db:seed`
 
 ## Sample Accounts
 
@@ -27,6 +27,6 @@ The seeder has at least two usable user accounts as a admin and member. For memb
 
 The project has task scheduler you might want to the cron job below.
 
-*  * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
+*  ` * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`
 
 
